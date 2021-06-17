@@ -158,5 +158,9 @@
     "google-imagenet1k-per10": {
         "train": ["<img_path>", "<lbl_path>"],
         "val": ["<img_path>", "<lbl_path>"]
+    },
+    "dummy_data_folder": {
+        "train": ["/gs/hs0/tga-i/sugiyama.y.al/VISSL/other/dummy_data/train", "/gs/hs0/tga-i/sugiyama.y.al/VISSL/other/dummy_data/train"],
+        "val": ["/gs/hs0/tga-i/sugiyama.y.al/VISSL/other/dummy_data/dummy_data/val", "/gs/hs0/tga-i/sugiyama.y.al/VISSL/other/dummy_data/dummy_data/val"]
     }
 }
