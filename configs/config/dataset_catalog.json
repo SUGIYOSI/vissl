@@ -161,6 +161,6 @@
     },
     "dummy_data_folder": {
         "train": ["/gs/hs0/tga-i/sugiyama.y.al/VISSL/other/dummy_data/train", "/gs/hs0/tga-i/sugiyama.y.al/VISSL/other/dummy_data/train"],
-        "val": ["/gs/hs0/tga-i/sugiyama.y.al/VISSL/other/dummy_data/dummy_data/val", "/gs/hs0/tga-i/sugiyama.y.al/VISSL/other/dummy_data/dummy_data/val"]
+        "val": ["/gs/hs0/tga-i/sugiyama.y.al/VISSL/other/dummy_data/val", "/gs/hs0/tga-i/sugiyama.y.al/VISSL/other/dummy_data/val"]
     }
 }
