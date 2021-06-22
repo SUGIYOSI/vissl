@@ -162,5 +162,9 @@
     "dummy_data_folder": {
         "train": ["/gs/hs0/tga-i/sugiyama.y.al/VISSL/other/dummy_data/train", "/gs/hs0/tga-i/sugiyama.y.al/VISSL/other/dummy_data/train"],
         "val": ["/gs/hs0/tga-i/sugiyama.y.al/VISSL/other/dummy_data/val", "/gs/hs0/tga-i/sugiyama.y.al/VISSL/other/dummy_data/val"]
+    },
+    "imagenet_1k": {
+        "train": ["/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/originalimages/train", "/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/originalimages/train"],
+        "val": ["/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/originalimages/validation", "/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/originalimages/validation"]
     }
 }
