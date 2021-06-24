@@ -3,7 +3,7 @@
 #$ -l f_node=1
 #$ -l h_rt=01:00:00
 #$ -j y
-#$ -o /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/output/o.$JOB_ID
+#$ -o /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/execution_shells/output/o.$JOB_ID
 
 source /gs/hs0/tga-i/sugiyama.y.al/VISSL/VISSL_386/bin/activate
 module load cuda/10.2.89
@@ -30,7 +30,7 @@ echo `date`
 #     config.OPTIMIZER.param_schedulers.lr.values=[0.01,0.001] \
 #     config.OPTIMIZER.param_schedulers.lr.milestones=[1] \
 #     config.HOOKS.TENSORBOARD_SETUP.USE_TENSORBOARD=true \
-#     config.CHECKPOINT.DIR="./train_result/test_2"
+#     config.CHECKPOINT.DIR="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result/test_2"
 
 # python /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/run_distributed_engines.py \
 #     hydra.verbose=true \
@@ -38,7 +38,7 @@ echo `date`
 #     config.DATA.TRAIN.DATA_SOURCES=[synthetic] \
 #     config.DISTRIBUTED.NUM_NODES=1 \
 #     config.DISTRIBUTED.NUM_PROC_PER_NODE=4 \
-#     config.CHECKPOINT.DIR="./train_result/test_1" \
+#     config.CHECKPOINT.DIR="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result/test_1" \
 #     config.HOOKS.TENSORBOARD_SETUP.USE_TENSORBOARD=true
 
 python /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/run_distributed_engines.py \
@@ -54,8 +54,8 @@ python /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/run_distributed_engines.py \
     config.DATA.TEST.BATCHSIZE_PER_REPLICA=2 \
     config.DISTRIBUTED.NUM_NODES=1 \
     config.DISTRIBUTED.NUM_PROC_PER_NODE=4 \
-    config.CHECKPOINT.DIR="./train_result/test_3" \
-    config.MODEL.WEIGHTS_INIT.PARAMS_FILE="./train_result/resnet50-19c8e357.pth" \
+    config.CHECKPOINT.DIR="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result/test_3" \
+    config.MODEL.WEIGHTS_INIT.PARAMS_FILE="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result/resnet50-19c8e357.pth" \
     config.MODEL.WEIGHTS_INIT.APPEND_PREFIX="trunk._feature_blocks." \
     config.MODEL.WEIGHTS_INIT.STATE_DICT_KEY_NAME="" \
     config.HOOKS.TENSORBOARD_SETUP.USE_TENSORBOARD=true
@@ -77,7 +77,7 @@ python /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/run_distributed_engines.py \
 #     config.DISTRIBUTED.NUM_NODES=1 \
 #     config.DISTRIBUTED.NUM_PROC_PER_NODE=4 \
 #     config.CHECKPOINT.DIR="./train_result/test_2" \
-#     config.MODEL.WEIGHTS_INIT.PARAMS_FILE="./train_result/resnet50-19c8e357.pth" \
+#     config.MODEL.WEIGHTS_INIT.PARAMS_FILE="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result/resnet50-19c8e357.pth" \
 #     config.MODEL.WEIGHTS_INIT.APPEND_PREFIX="trunk._feature_blocks." \
 #     config.MODEL.WEIGHTS_INIT.STATE_DICT_KEY_NAME="" \
 #     config.HOOKS.TENSORBOARD_SETUP.USE_TENSORBOARD=true

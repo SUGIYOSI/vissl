@@ -3,7 +3,7 @@
 #$ -l f_node=1
 #$ -l h_rt=03:00:00
 #$ -j y
-#$ -o /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/output/o.$JOB_ID
+#$ -o /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/execution_shells/output/o.$JOB_ID
 
 source /gs/hs0/tga-i/sugiyama.y.al/VISSL/VISSL_386/bin/activate
 module load cuda/10.2.89
@@ -22,7 +22,7 @@ python /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/run_distributed_engines.py \
     config.DATA.TEST.DATASET_NAMES=[imagenet_1k] \
     config.DISTRIBUTED.NUM_NODES=1 \
     config.DISTRIBUTED.NUM_PROC_PER_NODE=4 \
-    config.CHECKPOINT.DIR="./train_result/pretrain_simclr_imagenet1k_v3" \
+    config.CHECKPOINT.DIR="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result/pretrain_simclr_imagenet1k_v3" \
     config.HOOKS.TENSORBOARD_SETUP.USE_TENSORBOARD=true
 
 echo '--End--'
