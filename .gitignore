@@ -102,3 +102,4 @@ train_config.yaml
 
 output/*
 train_result/*
+execution_shells/output/*
