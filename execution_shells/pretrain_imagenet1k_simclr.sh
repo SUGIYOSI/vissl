@@ -22,7 +22,7 @@ python /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/run_distributed_engines.py \
     config.DATA.TEST.DATASET_NAMES=[imagenet_1k] \
     config.DISTRIBUTED.NUM_NODES=1 \
     config.DISTRIBUTED.NUM_PROC_PER_NODE=4 \
-    config.CHECKPOINT.DIR="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result/pretrain_simclr_imagenet1k_v3" \
+    config.CHECKPOINT.DIR="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result/pretrain_simclr_imagenet1k_v5" \
     config.HOOKS.TENSORBOARD_SETUP.USE_TENSORBOARD=true
 
 echo '--End--'
