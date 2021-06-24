@@ -3,7 +3,7 @@
 #$ -l f_node=1
 #$ -l h_rt=01:00:00
 #$ -j y
-#$ -o output/o.$JOB_ID
+#$ -o /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/output/o.$JOB_ID
 
 source /gs/hs0/tga-i/sugiyama.y.al/VISSL/VISSL_386/bin/activate
 module load cuda/10.2.89
@@ -11,7 +11,7 @@ module load cuda/10.2.89
 echo '--Start--'
 echo `date`
 
-# python run_distributed_engines.py \
+# python /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/run_distributed_engines.py \
 #     hydra.verbose=true \
 #     config=pretrain/supervised/supervised_4gpu_resnet_example \
 #     config.DATA.TRAIN.DATA_SOURCES=[disk_folder] \
@@ -32,7 +32,7 @@ echo `date`
 #     config.HOOKS.TENSORBOARD_SETUP.USE_TENSORBOARD=true \
 #     config.CHECKPOINT.DIR="./train_result/test_2"
 
-# python run_distributed_engines.py \
+# python /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/run_distributed_engines.py \
 #     hydra.verbose=true \
 #     config=pretrain/simclr/quick_1gpu_resnet50_simclr.yaml \
 #     config.DATA.TRAIN.DATA_SOURCES=[synthetic] \
@@ -41,7 +41,7 @@ echo `date`
 #     config.CHECKPOINT.DIR="./train_result/test_1" \
 #     config.HOOKS.TENSORBOARD_SETUP.USE_TENSORBOARD=true
 
-python run_distributed_engines.py \
+python /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/run_distributed_engines.py \
     hydra.verbose=true \
     config=/test/integration_test/eval_in1k_linear_imagefolder_head.yaml \
     config.DATA.TRAIN.DATA_SOURCES=[disk_folder] \
@@ -60,7 +60,7 @@ python run_distributed_engines.py \
     config.MODEL.WEIGHTS_INIT.STATE_DICT_KEY_NAME="" \
     config.HOOKS.TENSORBOARD_SETUP.USE_TENSORBOARD=true
 
-# python run_distributed_engines.py \
+# python /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/run_distributed_engines.py \
 #     hydra.verbose=true \
 #     config=/benchmark/fulltune/imagenet1k/eval_resnet_4gpu_transfer_in1k_fulltune.yaml \
 #     config.DATA.TRAIN.DATA_SOURCES=[disk_folder] \
