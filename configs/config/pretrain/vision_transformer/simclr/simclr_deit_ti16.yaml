@@ -90,15 +90,16 @@ config:
   OPTIMIZER:
     name: adamw
     weight_decay: 0.05
-    num_epochs: 300
+    num_epochs: 7
+    # num_epochs: 300
     non_regularized_parameters: [pos_embedding, class_token]
     param_schedulers:
       lr:
         auto_lr_scaling:
           auto_scale: True
           base_value: 0.0005
-          base_lr_batch_size: 256
-          # base_lr_batch_size: 512
+          # base_lr_batch_size: 256
+          base_lr_batch_size: 512
         name: composite
         schedulers:
           - name: linear
