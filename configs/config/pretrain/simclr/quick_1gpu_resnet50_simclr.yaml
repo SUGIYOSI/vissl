@@ -14,7 +14,7 @@ config:
     TRAIN:
       DATA_SOURCES: [disk_filelist]
       DATASET_NAMES: [imagenet1k_filelist]
-      BATCHSIZE_PER_REPLICA: 32
+      BATCHSIZE_PER_REPLICA: 64
       LABEL_TYPE: sample_index    # just an implementation detail. Label isn't used
       TRANSFORMS:
         - name: ImgReplicatePil
@@ -75,7 +75,7 @@ config:
       weight_decay: 0.000001
       momentum: 0.9
       nesterov: False
-      num_epochs: 2
+      num_epochs: 100
       regularize_bn: False
       regularize_bias: True
       head_optimizer_params:
@@ -105,8 +105,8 @@ config:
           lengths: [0.1, 0.9]                 # 100ep
   DISTRIBUTED:
     BACKEND: nccl
-    # NUM_NODES: 1
-    # NUM_PROC_PER_NODE: 1
+    NUM_NODES: 1
+    NUM_PROC_PER_NODE: 4
     INIT_METHOD: tcp
     RUN_ID: auto
   MACHINE:
