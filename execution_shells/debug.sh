@@ -1,7 +1,7 @@
 #!/bin/bash
 #$ -cwd
 #$ -l f_node=1
-#$ -l h_rt=10:00:00
+#$ -l h_rt=01:00:00
 #$ -j y
 #$ -o /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/execution_shells/output/o.$JOB_ID
 
@@ -13,21 +13,30 @@ echo `date`
 
 python /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/run_distributed_engines.py \
     hydra.verbose=true \
-    config=pretrain/vision_transformer/simclr/deit_tiny_v2.yaml \
-    config.DATA.TRAIN.DATA_SOURCES=[disk_folder] \
-    config.DATA.TRAIN.LABEL_SOURCES=[disk_folder] \
-    config.DATA.TRAIN.DATASET_NAMES=[original_imagenet_1k] \
+    config=pretrain/simclr/simclr_1node_resnet50.yaml \
+    config.DATA.TRAIN.DATA_SOURCES=[synthetic] \
     config.DISTRIBUTED.NUM_NODES=1 \
     config.DISTRIBUTED.NUM_PROC_PER_NODE=4 \
-    config.CHECKPOINT.DIR="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result/debug_simclr_deit_imagenet1k_v6" \
+    config.CHECKPOINT.DIR="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result/debug_simclr_deit_imagenet1k_v13" \
     config.HOOKS.TENSORBOARD_SETUP.USE_TENSORBOARD=true
+
+# python /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/run_distributed_engines.py \
+#     hydra.verbose=true \
+#     config=pretrain/vision_transformer/simclr/deit_tiny_v2.yaml \
+#     config.DATA.TRAIN.DATA_SOURCES=[disk_folder] \
+#     config.DATA.TRAIN.LABEL_SOURCES=[disk_folder] \
+#     config.DATA.TRAIN.DATASET_NAMES=[original_imagenet_1k] \
+#     config.DISTRIBUTED.NUM_NODES=1 \
+#     config.DISTRIBUTED.NUM_PROC_PER_NODE=4 \
+#     config.CHECKPOINT.DIR="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result/debug_simclr_deit_imagenet1k_v10" \
+#     config.HOOKS.TENSORBOARD_SETUP.USE_TENSORBOARD=true
 
 echo '--End--'
 echo `date`
     # config=pretrain/vision_transformer/simclr/vit_t16.yaml \
     # config=pretrain/vision_transformer/simclr/simclr_deit_ti16.yaml \
     # config=pretrain/simclr/simclr_1node_resnet50.yaml \
-
+    # config=pretrain/simclr/quick_1gpu_resnet50_simclr.yaml \
 # --------------------------------------------------------------------------------------------------------
 # python /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/run_distributed_engines.py \
 #     hydra.verbose=true \
