@@ -26,9 +26,7 @@ config:
     TRAIN:
       DATA_SOURCES: [disk_folder]
       DATASET_NAMES: [original_imagenet_1k]
-      # BATCHSIZE_PER_REPLICA: 64
-      # BATCHSIZE_PER_REPLICA: 128
-      BATCHSIZE_PER_REPLICA: 192
+      BATCHSIZE_PER_REPLICA: 128
       LABEL_TYPE: sample_index    # just an implementation detail. Label isn't used
       TRANSFORMS:
         - name: ImgReplicatePil
@@ -61,23 +59,24 @@ config:
         NUM_LAYERS: 12
         NUM_HEADS: 3
         HIDDEN_DIM: 192
-        MLP_DIM: 768
-        # MLP_DIM: 3072
+        # MLP_DIM: 768
+        MLP_DIM: 3072
         DROPOUT_RATE: 0.1
         ATTENTION_DROPOUT_RATE: 0
         CLASSIFIER: token
     HEAD:
       PARAMS: [
+      ["mlp", {"dims": [192, 3072], "use_relu": True}],
+      ["mlp", {"dims": [3072, 128]}],
       # MARK: 768では？ 192x4=768
-      # ["mlp", {"dims": [192, 3072], "use_relu": True}],
-      # ["mlp", {"dims": [3072, 128]}],
-      ["mlp", {"dims": [192, 768], "use_relu": True}],
-      ["mlp", {"dims": [768, 128]}],
+      # ["mlp", {"dims": [192, 768], "use_relu": True}],
+      # ["mlp", {"dims": [768, 128]}],
       ]
     SYNC_BN_CONFIG:
       CONVERT_BN_TO_SYNC_BN: False
       SYNC_BN_TYPE: apex
       GROUP_SIZE: 4
+      # GROUP_SIZE: 8
     AMP_PARAMS:
       USE_AMP: True
       # USE_AMP: True
@@ -99,9 +98,7 @@ config:
         auto_lr_scaling:
           auto_scale: True
           base_value: 0.0005
-          # base_lr_batch_size: 256
-          # base_lr_batch_size: 512
-          base_lr_batch_size: 768
+          base_lr_batch_size: 512
         name: composite
         schedulers:
           - name: linear
