@@ -12,14 +12,17 @@ echo '--Start--'
 echo `date`
 python /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/run_distributed_engines.py \
     hydra.verbose=true \
-    config=pretrain/vision_transformer/simclr/deit_t16.yaml \
+    config=pretrain/simclr/simclr_resnet50.yaml \
     config.DATA.TRAIN.DATA_SOURCES=[disk_folder] \
     config.DATA.TRAIN.LABEL_SOURCES=[disk_folder] \
     config.DATA.TRAIN.DATASET_NAMES=[original_imagenet_1k] \
     config.DISTRIBUTED.NUM_NODES=1 \
     config.DISTRIBUTED.NUM_PROC_PER_NODE=4 \
-    config.CHECKPOINT.DIR="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result/pretrain/pretrain_simclr_deit_t16_224_v1" \
+    config.CHECKPOINT.DIR="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result/pretrain/pretrain_simclr_resnet50_in1k_v1" \
     config.HOOKS.TENSORBOARD_SETUP.USE_TENSORBOARD=true
 
 echo '--End--'
 echo `date`
+
+    # config=pretrain/simclr/simclr_resnet50.yaml \
+    # config=pretrain/vision_transformer/simclr/deit_t16.yaml \

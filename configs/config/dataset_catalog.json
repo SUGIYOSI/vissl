@@ -28,12 +28,12 @@
         "val": ["<img_path>", "<lbl_path>"]
     },
     "CIFAR10": {
-        "train": ["<path_to_pytorch_dataset>", "<unused>"],
-        "val": ["<path_to_pytorch_dataset>", "<unused>"]
+        "train": ["/gs/hs0/tga-i/sugiyama.y.al/datasets/CIFAR_10/train", "/gs/hs0/tga-i/sugiyama.y.al/datasets/CIFAR_10/train"],
+        "val": ["/gs/hs0/tga-i/sugiyama.y.al/datasets/CIFAR_10/validation", "/gs/hs0/tga-i/sugiyama.y.al/datasets/CIFAR_10/validation"]
     },
     "CIFAR100": {
-        "train": ["<path_to_pytorch_dataset>", "<unused>"],
-        "val": ["<path_to_pytorch_dataset>", "<unused>"]
+        "train": ["/gs/hs0/tga-i/sugiyama.y.al/datasets/CIFAR_100/train", "/gs/hs0/tga-i/sugiyama.y.al/datasets/CIFAR_100/train"],
+        "val": ["/gs/hs0/tga-i/sugiyama.y.al/datasets/CIFAR_100/validation", "/gs/hs0/tga-i/sugiyama.y.al/datasets/CIFAR_100/validation"]
     },
     "STL10": {
         "train": ["<path_to_pytorch_dataset>", "<unused>"],

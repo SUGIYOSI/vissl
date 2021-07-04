@@ -16,9 +16,6 @@ config:
   DATA:
     NUM_DATALOADER_WORKERS: 5
     TRAIN:
-      DATA_SOURCES: [disk_folder]
-      LABEL_SOURCES: [disk_folder]
-      DATASET_NAMES: [original_imagenet_1k]
       BATCHSIZE_PER_REPLICA: 128
       TRANSFORMS:
         - name: RandomResizedCrop
@@ -30,11 +27,7 @@ config:
           std: [0.229, 0.224, 0.225]
       MMAP_MODE: True
       COPY_TO_LOCAL_DISK: False
-      COPY_DESTINATION_DIR: /tmp/imagenet1k/
     TEST:
-      DATA_SOURCES: [disk_folder]
-      LABEL_SOURCES: [disk_folder]
-      DATASET_NAMES: [original_imagenet_1k]
       BATCHSIZE_PER_REPLICA: 128
       TRANSFORMS:
         - name: Resize
@@ -47,7 +40,6 @@ config:
           std: [0.229, 0.224, 0.225]
       MMAP_MODE: True
       COPY_TO_LOCAL_DISK: False
-      COPY_DESTINATION_DIR: /tmp/imagenet1k/
   METERS:
     name: accuracy_list_meter
     accuracy_list_meter:
@@ -78,8 +70,7 @@ config:
       name: sgd
       weight_decay: 0.000
       momentum: 0.9
-      # num_epochs: 1000
-      num_epochs: 100
+      num_epochs: 1000
       nesterov: True
       regularize_bn: False
       regularize_bias: True
@@ -90,9 +81,7 @@ config:
             base_value: 0.1
             base_lr_batch_size: 512
           values: [0.1, 0.01, 0.001]
-          # values: [0.1, 0.01, 0.001, 0.0001, 0.00001]
           milestones: [30, 60]
-          # milestones: [30, 60, 90, 100]
           name: multistep
           update_interval: epoch
           # update_interval: step
