@@ -1,10 +1,11 @@
 # @package _global_
 config:
-  VERBOSE: True
-  LOG_FREQUENCY: 10
+  VERBOSE: False
+  LOG_FREQUENCY: 100
   TEST_ONLY: False
-  TEST_MODEL: False
-  SEED_VALUE: 0
+  TEST_EVERY_NUM_EPOCH: 1
+  TEST_MODEL: True
+  SEED_VALUE: 1
   MULTI_PROCESSING_METHOD: forkserver
   HOOKS:
     PERF_STATS:
@@ -13,42 +14,46 @@ config:
       PERF_STAT_FREQUENCY: 10
     TENSORBOARD_SETUP:
       USE_TENSORBOARD: True
+      EXPERIMENT_LOG_DIR:
       FLUSH_EVERY_N_MIN: 20
-  CHECKPOINT:
-    AUTO_RESUME: True
-    CHECKPOINT_FREQUENCY: 1
   DATA:
     NUM_DATALOADER_WORKERS: 28
-    # NUM_DATALOADER_WORKERS: 10
     TRAIN:
-      DATA_SOURCES: [disk_folder]
-      DATASET_NAMES: [original_imagenet_1k]
-      # BATCHSIZE_PER_REPLICA: 64
-      # BATCHSIZE_PER_REPLICA: 128
-      BATCHSIZE_PER_REPLICA: 192
-      LABEL_TYPE: sample_index    # just an implementation detail. Label isn't used
+      BATCHSIZE_PER_REPLICA: 128
       TRANSFORMS:
-        - name: ImgReplicatePil
-          num_times: 2
         - name: RandomResizedCrop
           size: 224
         - name: RandomHorizontalFlip
-          p: 0.5
-        - name: ImgPilColorDistortion
-          strength: 1.0
-        - name: ImgPilGaussianBlur
-          p: 0.5
-          radius_min: 0.1
-          radius_max: 2.0
         - name: ToTensor
         - name: Normalize
           mean: [0.485, 0.456, 0.406]
           std: [0.229, 0.224, 0.225]
-      COLLATE_FUNCTION: simclr_collator
       MMAP_MODE: True
       COPY_TO_LOCAL_DISK: False
-      COPY_DESTINATION_DIR: /tmp/imagenet1k/
-      DROP_LAST: True
+    TEST:
+      BATCHSIZE_PER_REPLICA: 128
+      TRANSFORMS:
+        - name: Resize
+          size: 256
+        - name: CenterCrop
+          size: 224
+        - name: ToTensor
+        - name: Normalize
+          mean: [0.485, 0.456, 0.406]
+          std: [0.229, 0.224, 0.225]
+      MMAP_MODE: True
+      COPY_TO_LOCAL_DISK: False
+  METERS:
+    name: accuracy_list_meter
+    accuracy_list_meter:
+      num_meters: 1
+      topk_values: [1, 5]
+  TRAINER:
+    TRAIN_STEP_NAME: standard_train_step
+  LOSS:
+    name: cross_entropy_multiple_output_single_target
+    cross_entropy_multiple_output_single_target:
+      ignore_index: -1
   MODEL:
     TRUNK:
       NAME: vision_transformer
@@ -79,12 +84,6 @@ config:
       USE_AMP: True
       # USE_AMP: True
       AMP_ARGS: {"opt_level": "O1"}
-  LOSS:
-    name: simclr_info_nce_loss
-    simclr_info_nce_loss:
-      temperature: 0.1
-      buffer_params:
-        embedding_dim: 128
   OPTIMIZER:
     name: adamw
     weight_decay: 0.05
@@ -107,19 +106,18 @@ config:
             end_value: 0.000001
         interval_scaling: [rescaled, fixed]
         # ここを変えるとEpochごとに出力される
-        # update_interval: epoch
-        update_interval: step
+        update_interval: epoch
+        # update_interval: step
         lengths: [0.05, 0.95]
-  METERS:
-    name: ""
-  TRAINER:
-    TRAIN_STEP_NAME: standard_train_step
   DISTRIBUTED:
     BACKEND: nccl
     NUM_NODES: 1
-    NUM_PROC_PER_NODE: 4 # 1 GPU
-    # MARK: なぜかIDをしてするとコケる
-    # RUN_ID: "60215"
+    NUM_PROC_PER_NODE: 4
+    INIT_METHOD: tcp
     RUN_ID: auto
   MACHINE:
     DEVICE: gpu
+  CHECKPOINT:
+    DIR: "."
+    AUTO_RESUME: True
+    CHECKPOINT_FREQUENCY: 100

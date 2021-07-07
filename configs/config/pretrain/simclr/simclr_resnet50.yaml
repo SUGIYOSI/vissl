@@ -15,8 +15,7 @@ config:
     TRAIN:
       DATA_SOURCES: [disk_folder]
       DATASET_NAMES: [imagenet1k_folder]
-      BATCHSIZE_PER_REPLICA: 192
-      # BATCHSIZE_PER_REPLICA: 64
+      BATCHSIZE_PER_REPLICA: 64
       LABEL_TYPE: sample_index    # just an implementation detail. Label isn't used
       TRANSFORMS:
         - name: ImgReplicatePil
@@ -51,7 +50,7 @@ config:
         DEPTH: 50
     HEAD:
       PARAMS: [
-        ["mlp", {"dims": [2048, 2048], "use_relu": True],
+        ["mlp", {"dims": [2048, 2048], "use_relu": True, "skip_last_layer_relu_bn": False}],
         ["mlp", {"dims": [2048, 128]}],
       ]
     SYNC_BN_CONFIG:
@@ -95,7 +94,7 @@ config:
           auto_lr_scaling:
             auto_scale: true
             base_value: 0.3
-            base_lr_batch_size: 768
+            base_lr_batch_size: 256
           name: composite
           schedulers:
             - name: linear
