@@ -14,14 +14,14 @@ config:
       PERF_STAT_FREQUENCY: 10
     TENSORBOARD_SETUP:
       USE_TENSORBOARD: True
-      EXPERIMENT_LOG_DIR:
       FLUSH_EVERY_N_MIN: 20
   DATA:
     NUM_DATALOADER_WORKERS: 28
     TRAIN:
-      BATCHSIZE_PER_REPLICA: 128
+      BATCHSIZE_PER_REPLICA: 256
       TRANSFORMS:
         - name: RandomResizedCrop
+          # size: 384
           size: 224
         - name: RandomHorizontalFlip
         - name: ToTensor
@@ -31,7 +31,7 @@ config:
       MMAP_MODE: True
       COPY_TO_LOCAL_DISK: False
     TEST:
-      BATCHSIZE_PER_REPLICA: 128
+      BATCHSIZE_PER_REPLICA: 256
       TRANSFORMS:
         - name: Resize
           size: 256
@@ -50,11 +50,14 @@ config:
       topk_values: [1, 5]
   TRAINER:
     TRAIN_STEP_NAME: standard_train_step
-  LOSS:
-    name: cross_entropy_multiple_output_single_target
-    cross_entropy_multiple_output_single_target:
-      ignore_index: -1
   MODEL:
+    FEATURE_EVAL_SETTINGS:
+      EVAL_MODE_ON: True
+      EVAL_TRUNK_AND_HEAD: False
+    WEIGHTS_INIT:
+      PARAMS_FILE: "specify model weights"
+      STATE_DICT_KEY_NAME: "classy_state_dict"
+      APPEND_PREFIX: "trunk."
     TRUNK:
       NAME: vision_transformer
       VISION_TRANSFORMERS:
@@ -63,7 +66,6 @@ config:
         NUM_LAYERS: 12
         NUM_HEADS: 3
         HIDDEN_DIM: 192
-        # MLP_DIM: 768
         MLP_DIM: 3072
         DROPOUT_RATE: 0.1
         ATTENTION_DROPOUT_RATE: 0
@@ -72,9 +74,6 @@ config:
       PARAMS: [
       ["mlp", {"dims": [192, 3072], "use_relu": True}],
       ["mlp", {"dims": [3072, 128]}],
-      # MARK: 768では？ 192x4=768
-      # ["mlp", {"dims": [192, 768], "use_relu": True}],
-      # ["mlp", {"dims": [768, 128]}],
       ]
     SYNC_BN_CONFIG:
       CONVERT_BN_TO_SYNC_BN: False
@@ -82,20 +81,22 @@ config:
       GROUP_SIZE: 4
     AMP_PARAMS:
       USE_AMP: True
-      # USE_AMP: True
       AMP_ARGS: {"opt_level": "O1"}
+  LOSS:
+    name: cross_entropy_multiple_output_single_target
+    cross_entropy_multiple_output_single_target:
+      ignore_index: -1
   OPTIMIZER:
     name: adamw
     weight_decay: 0.05
-    num_epochs: 300
+    num_epochs: 1000
     non_regularized_parameters: [pos_embedding, class_token]
     param_schedulers:
       lr:
         auto_lr_scaling:
           auto_scale: True
           base_value: 0.0005
-          # base_lr_batch_size: 512
-          base_lr_batch_size: 768
+          base_lr_batch_size: 1024
         name: composite
         schedulers:
           - name: linear
@@ -105,9 +106,7 @@ config:
             start_value: 0.0005
             end_value: 0.000001
         interval_scaling: [rescaled, fixed]
-        # ここを変えるとEpochごとに出力される
         update_interval: epoch
-        # update_interval: step
         lengths: [0.05, 0.95]
   DISTRIBUTED:
     BACKEND: nccl
@@ -120,4 +119,4 @@ config:
   CHECKPOINT:
     DIR: "."
     AUTO_RESUME: True
-    CHECKPOINT_FREQUENCY: 100
+    CHECKPOINT_FREQUENCY: 50

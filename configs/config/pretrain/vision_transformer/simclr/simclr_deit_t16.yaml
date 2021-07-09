@@ -77,7 +77,6 @@ config:
       GROUP_SIZE: 4
     AMP_PARAMS:
       USE_AMP: True
-      # USE_AMP: True
       AMP_ARGS: {"opt_level": "O1"}
   LOSS:
     name: simclr_info_nce_loss
@@ -106,8 +105,6 @@ config:
             start_value: 0.0005
             end_value: 0.000001
         interval_scaling: [rescaled, fixed]
-        # ここを変えるとEpochごとに出力される
-        # update_interval: epoch
         update_interval: step
         lengths: [0.05, 0.95]
   METERS:
@@ -118,7 +115,7 @@ config:
     BACKEND: nccl
     NUM_NODES: 1
     NUM_PROC_PER_NODE: 4 # 1 GPU
-    # MARK: なぜかIDをしてするとコケる
+    # MARK: なぜかIDを指定するとコケる
     # RUN_ID: "60215"
     RUN_ID: auto
   MACHINE:
