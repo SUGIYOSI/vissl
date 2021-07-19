@@ -1,9 +1,9 @@
 #!/bin/bash
 #$ -cwd
 #$ -l f_node=1
-#$ -l h_rt=78:00:00
+#$ -l h_rt=24:00:00
 #$ -j y
-#$ -o /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/execution_shells/output/pretrain/pretrain_simclr_deit_t16_fake1k_v1__v1_v2
+#$ -o /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/execution_shells/output/pretrain/pretrain_simclr_deit_t16_fake1k_v1__v1__5
 
 source /gs/hs0/tga-i/sugiyama.y.al/VISSL/VISSL_386/bin/activate
 module load cuda/10.2.89
