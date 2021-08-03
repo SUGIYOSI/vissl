@@ -10,11 +10,18 @@ config:
     PERF_STATS:
       MONITOR_PERF_STATS: True
       ROLLING_BTIME_FREQ: 313
+      PERF_STAT_FREQUENCY: 10
+    TENSORBOARD_SETUP:
+      USE_TENSORBOARD: True
+      FLUSH_EVERY_N_MIN: 20
+    CHECKPOINT:
+      AUTO_RESUME: True
+      CHECKPOINT_FREQUENCY: 1
   DATA:
-    NUM_DATALOADER_WORKERS: 10
+    NUM_DATALOADER_WORKERS: 5
     TRAIN:
       DATA_SOURCES: [disk_folder]
-      DATASET_NAMES: [imagenet1k_folder]
+      DATASET_NAMES: [original_imagenet_1k]
       BATCHSIZE_PER_REPLICA: 64
       LABEL_TYPE: sample_index    # just an implementation detail. Label isn't used
       TRANSFORMS:
@@ -39,10 +46,6 @@ config:
       COPY_TO_LOCAL_DISK: False
       COPY_DESTINATION_DIR: /tmp/imagenet1k/
       DROP_LAST: True
-  TRAINER:
-    TRAIN_STEP_NAME: standard_train_step
-  METERS:
-    name: ""
   MODEL:
     TRUNK:
       NAME: resnet
@@ -58,8 +61,7 @@ config:
       SYNC_BN_TYPE: apex
       GROUP_SIZE: 4
     AMP_PARAMS:
-      USE_AMP: False
-      # USE_AMP: True
+      USE_AMP: True
       AMP_ARGS: {"opt_level": "O1"}
   LOSS:
       name: simclr_info_nce_loss
@@ -78,15 +80,6 @@ config:
       momentum: 0.9
       nesterov: False
       num_epochs: 300
-      # num_epochs: 200
-      # num_epochs: 400
-      # num_epochs: 500
-      # num_epochs: 600
-      # num_epochs: 800
-      # num_epochs: 1000
-      # num_epochs: 1
-      # num_epochs: 2
-      # num_epochs: 5
       regularize_bn: True
       regularize_bias: True
       param_schedulers:
@@ -115,15 +108,14 @@ config:
           # lengths: [0.0128, 0.9872]         # 1ep IG-1B
           # lengths: [0.00641, 0.99359]       # 2ep IG-1B
           # lengths: [0.002563, 0.997437]     # 5ep IG-1B = 50 ep IG-100M
+  METERS:
+    name: ""
+  TRAINER:
+    TRAIN_STEP_NAME: standard_train_step
   DISTRIBUTED:
     BACKEND: nccl
     NUM_NODES: 1
     NUM_PROC_PER_NODE: 4
     RUN_ID: auto
-    INIT_METHOD: tcp
-    NCCL_DEBUG: True
   MACHINE:
     DEVICE: gpu
-  CHECKPOINT:
-    AUTO_RESUME: True
-    CHECKPOINT_FREQUENCY: 1
