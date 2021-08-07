@@ -211,10 +211,12 @@ class SSLTransformsWrapper(ClassyTransform):
         transform_types: Dict[str, Any],
         transform_receives_entire_batch=False,
     ) -> "SSLTransformsWrapper":
-        indices = config.get("indices", [])
+        # MARK: indicesを指定すると引数周りでエラーが発生するため、新しくnew_def_indicesを定義
+        indices = config.get("new_def_indices", [])
+        config.pop("new_def_indices", None)
         return cls(
             indices,
             transform_types=transform_types,
             transform_receives_entire_batch=transform_receives_entire_batch,
-            **config,
+            **config
         )
