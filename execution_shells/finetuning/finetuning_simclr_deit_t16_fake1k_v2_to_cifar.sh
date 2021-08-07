@@ -3,7 +3,7 @@
 #$ -l f_node=1
 #$ -l h_rt=24:00:00
 #$ -j y
-#$ -o /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/execution_shells/output/finetuning/o.finetuning_simclr_deit_t16_fake1k_v2_to_cifar100__v2
+#$ -o /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/execution_shells/output/finetuning/o.finetuning_simclr_deit_t16_fake1k_v2_to_cifar100__v3
 
 source /gs/hs0/tga-i/sugiyama.y.al/VISSL/VISSL_386/bin/activate
 module load cuda/10.2.89
@@ -13,7 +13,7 @@ echo `date`
 python /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/run_distributed_engines.py \
     hydra.verbose=true \
     config=/benchmark/fulltune/finetuning_simclr_deit.yaml \
-    config.CHECKPOINT.DIR="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result/finetuning/finetuning_simclr_deit_t16_fake1k_v2_to_cifar100__v2" \
+    config.CHECKPOINT.DIR="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result/finetuning/finetuning_simclr_deit_t16_fake1k_v2_to_cifar100__v3" \
     config.DATA.TRAIN.DATA_SOURCES=[torchvision_dataset] \
     config.DATA.TRAIN.LABEL_SOURCES=[torchvision_dataset] \
     config.DATA.TRAIN.DATASET_NAMES=[CIFAR100] \
@@ -24,7 +24,7 @@ python /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/run_distributed_engines.py \
     config.DATA.TEST.DATASET_NAMES=[CIFAR100] \
     config.DISTRIBUTED.NUM_NODES=1 \
     config.DISTRIBUTED.NUM_PROC_PER_NODE=4 \
-    config.MODEL.WEIGHTS_INIT.PARAMS_FILE="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result/pretrain/pretrain_simclr_deit_t16_fake1k_v2__v1/model_phase200.torch" \
+    config.MODEL.WEIGHTS_INIT.PARAMS_FILE="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result/pretrain/pretrain_simclr_deit_t16_fake1k_v2__v1/model_final_checkpoint_phase299.torch" \
 
 echo '--End--'
 echo `date`

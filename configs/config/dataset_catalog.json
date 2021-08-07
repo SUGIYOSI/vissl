@@ -190,5 +190,17 @@
     "original_imagenet_1k_50": {
         "train": ["/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/originalimages_50/train", "/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/originalimages_50/train"],
         "val": ["/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/originalimages/validation", "/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/originalimages/validation"]
+    },
+    "fakeimagenet_v1_1k_01": {
+        "train": ["/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/fakeimages_v1_01/train", "/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/fakeimages_v1_01/train"],
+        "val": ["/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/fakeimages_v1/validation", "/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/fakeimages_v1/validation"]
+    },
+    "fakeimagenet_v1_1k_05": {
+        "train": ["/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/fakeimages_v1_05/train", "/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/fakeimages_v1_05/train"],
+        "val": ["/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/fakeimages_v1/validation", "/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/fakeimages_v1/validation"]
+    },
+    "fakeimagenet_v1_1k_10": {
+        "train": ["/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/fakeimages_v1_10/train", "/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/fakeimages_v1_10/train"],
+        "val": ["/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/fakeimages_v1/validation", "/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/fakeimages_v1/validation"]
     }
 }
