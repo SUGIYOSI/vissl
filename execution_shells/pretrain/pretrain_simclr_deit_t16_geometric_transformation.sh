@@ -1,7 +1,7 @@
 #!/bin/bash
 #$ -cwd
 #$ -l f_node=1
-#$ -l h_rt=24:00:00
+#$ -l h_rt=12:00:00
 #$ -j y
 #$ -o /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/execution_shells/output/pretrain/pretrain_simclr_deit_t16_geometric_transformation_in1k_10__v1__1
 

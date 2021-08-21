@@ -3,7 +3,7 @@
 #$ -l f_node=1
 #$ -l h_rt=24:00:00
 #$ -j y
-#$ -o /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/execution_shells/output/pretrain/pretrain_simclr_resnet50_in1k__v1__4
+#$ -o /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/execution_shells/output/pretrain/pretrain_simclr_resnet50_in1k__v1__7
 
 source /gs/hs0/tga-i/sugiyama.y.al/VISSL/VISSL_386/bin/activate
 module load cuda/10.2.89
