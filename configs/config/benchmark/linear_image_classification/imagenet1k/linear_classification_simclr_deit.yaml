@@ -21,7 +21,6 @@ config:
       BATCHSIZE_PER_REPLICA: 256
       TRANSFORMS:
         - name: RandomResizedCrop
-          # size: 384
           size: 224
         - name: RandomHorizontalFlip
         - name: ToTensor
@@ -53,13 +52,10 @@ config:
   MODEL:
     FEATURE_EVAL_SETTINGS:
       EVAL_MODE_ON: True
-      # MARK: debugを行い確かめる
-      # headも読み込むべきなのか
-      # EVAL_TRUNK_AND_HEAD: True
+      FREEZE_TRUNK_ONLY: True
     WEIGHTS_INIT:
       PARAMS_FILE: "specify model weights"
       STATE_DICT_KEY_NAME: "classy_state_dict"
-      APPEND_PREFIX: "trunk."
     TRUNK:
       NAME: vision_transformer
       VISION_TRANSFORMERS:
