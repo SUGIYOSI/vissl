@@ -55,22 +55,21 @@ config:
     FEATURE_EVAL_SETTINGS:
       EVAL_MODE_ON: True
       FREEZE_TRUNK_ONLY: True
-      SHOULD_FLATTEN_FEATS: False
-      LINEAR_EVAL_FEAT_POOL_OPS_MAP: [
-        ["res5", ["AvgPool2d", [[6, 6], 1, 0]]],
-      ]
     TRUNK:
       NAME: resnet
       RESNETS:
         DEPTH: 50
     HEAD:
       # MARK: eval_mlpを使用すると精度が上がる理由はチャネル数
-      PARAMS: [
-        ["eval_mlp", {"in_channels": 2048, "dims": [8192, 1000]}],
-      ]
       # PARAMS: [
-      #   ["mlp", {"dims": [2048, 1000]}],
+      #   ["eval_mlp", {"in_channels": 2048, "dims": [8192, 1000]}],
       # ]
+      # PARAMS: [
+      #   ["mlp", {"dims": [8192, 1000]}],
+      # ]
+      PARAMS: [
+        ["mlp", {"dims": [2048, 1000]}],
+      ]
     WEIGHTS_INIT:
       PARAMS_FILE: "specify model weights"
     SYNC_BN_CONFIG:
@@ -89,7 +88,7 @@ config:
     # 検証必要
     weight_decay: 0.0005
     momentum: 0.9
-    num_epochs: 28
+    num_epochs: 100
     nesterov: True
     regularize_bn: False
     regularize_bias: True
@@ -97,10 +96,10 @@ config:
       lr:
         auto_lr_scaling:
           auto_scale: true
-          base_value: 0.01
+          base_value: 0.1
           base_lr_batch_size: 512
-        values: [0.01, 0.001, 0.0001, 0.00001]
-        milestones: [8, 16, 24]
+        values: [0.1, 0.01, 0.001]
+        milestones: [30, 60]
         name: multistep
         update_interval: epoch
   DISTRIBUTED:
@@ -114,4 +113,4 @@ config:
   CHECKPOINT:
     DIR: "."
     AUTO_RESUME: True
-    CHECKPOINT_FREQUENCY: 1
+    CHECKPOINT_FREQUENCY: 100

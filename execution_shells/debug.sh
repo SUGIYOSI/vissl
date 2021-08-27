@@ -1,9 +1,9 @@
 #!/bin/bash
 #$ -cwd
 #$ -l f_node=1
-#$ -l h_rt=00:10:00
+#$ -l h_rt=03:00:00
 #$ -j y
-#$ -o /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/execution_shells/output/debug/v11/o.debug_No0
+#$ -o /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/execution_shells/output/debug/v12/o.debug_No0
 
 source /gs/hs0/tga-i/sugiyama.y.al/VISSL/VISSL_386/bin/activate
 module load cuda/10.2.89
@@ -12,13 +12,13 @@ echo '--Start--'
 echo `date`
 python /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/run_distributed_engines.py \
     hydra.verbose=true \
-    config=pretrain/vision_transformer/simclr/simclr_deit_t16.yaml \
-    config.CHECKPOINT.DIR="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result/debug/v11/debug_No0" \
+    config=/pretrain/vision_transformer/simclr/simclr_deit_t16.yaml \
+    config.CHECKPOINT.DIR="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result/other/v12/debug_No0" \
     config.DATA.TRAIN.DATA_SOURCES=[disk_folder] \
     config.DATA.TRAIN.LABEL_SOURCES=[disk_folder] \
-    config.DATA.TRAIN.DATASET_NAMES=[original_imagenet_1k_01] \
+    config.DATA.TRAIN.DATASET_NAMES=[original_imagenet_1k_10] \
     config.DISTRIBUTED.NUM_NODES=1 \
-    config.DATA.TRAIN.BATCHSIZE_PER_REPLICA=32 \
+    config.OPTIMIZER.param_schedulers.lr.auto_lr_scaling.base_lr_batch_size=99999 \
     config.DISTRIBUTED.NUM_PROC_PER_NODE=4 \
     config.OPTIMIZER.num_epochs=30 \
 
