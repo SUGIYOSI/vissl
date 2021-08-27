@@ -22,7 +22,6 @@ python /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/run_distributed_engines.py \
     config.DISTRIBUTED.NUM_PROC_PER_NODE=4 \
     config.OPTIMIZER.num_epochs=30 \
 
-
 echo '--End--'
 echo `date`
 # python /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/run_distributed_engines.py \
