@@ -1,75 +1,38 @@
 #!/bin/bash
 #$ -cwd
 #$ -l f_node=1
-#$ -l h_rt=03:00:00
+#$ -l h_rt=00:30:00
 #$ -j y
-#$ -o /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/execution_shells/output/debug/v12/o.debug_No0
+#$ -o /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/execution_shells/output/debug/v13/o.check_pretrain_v100_node_1__v01.o
 
+./etc/profile.d/modules.sh
 source /gs/hs0/tga-i/sugiyama.y.al/VISSL/VISSL_386/bin/activate
-module load cuda/10.2.89
+# module load cuda/10.2.89 openmpi/3.1.4-opa10.10
+module load cuda/10.2.89 openmpi/3.1.4-opa10.10 nccl/2.8.4
+module list
+
+export NUM_PROC=1
+export NGPUS=2
+# export NUM_PROC=4
+# export NGPUS=8
+export MASTER_ADDR=$(ip addr show dev ib0 | grep '\<inet\>' | cut -d " " -f 6 | cut -d "/" -f 1)
+export PORT=":8888"
 
 echo '--Start--'
 echo `date`
+# mpirun -npernode $NUM_PROC -np $NGPUS \
 python /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/run_distributed_engines.py \
     hydra.verbose=true \
-    config=/pretrain/vision_transformer/simclr/simclr_deit_t16.yaml \
-    config.CHECKPOINT.DIR="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result/other/v12/debug_No0" \
-    config.DATA.TRAIN.DATA_SOURCES=[disk_folder] \
-    config.DATA.TRAIN.LABEL_SOURCES=[disk_folder] \
-    config.DATA.TRAIN.DATASET_NAMES=[original_imagenet_1k_10] \
+    config=/pretrain/simclr/simclr_resnet50.yaml \
+    config.CHECKPOINT.DIR="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result/other/v13/check_pretrain_v100_node_1__v01" \
+    config.DATA.TRAIN.DATASET_NAMES=[original_imagenet_1k] \
     config.DISTRIBUTED.NUM_NODES=1 \
-    config.OPTIMIZER.param_schedulers.lr.auto_lr_scaling.base_lr_batch_size=99999 \
     config.DISTRIBUTED.NUM_PROC_PER_NODE=4 \
-    config.OPTIMIZER.num_epochs=30 \
+    config.MODEL.SYNC_BN_CONFIG.GROUP_SIZE=4 \
+    config.DATA.TRAIN.BATCHSIZE_PER_REPLICA=64 \
+    config.DISTRIBUTED.RUN_ID=$MASTER_ADDR$PORT \
 
 echo '--End--'
 echo `date`
-# python /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/run_distributed_engines.py \
-# --------------------------------------------------------------------------------------------------------
-# config=pretrain/vision_transformer/simclr/simclr_deit_ti16.yaml \
-# config=pretrain/simclr/simclr_resnet50.yaml \
-# config=/benchmark/fulltune/finetuning_simclr_resnet.yaml \
-# config=/benchmark/fulltune/finetuning_simclr_deit.yaml \
-
-# config.DATA.TRAIN.DATA_SOURCES=[synthetic] \
-# config.DATA.TRAIN.DATA_SOURCES=[torchvision_dataset] \
-# config.DATA.TRAIN.LABEL_SOURCES=[torchvision_dataset] \
-# config.DATA.TRAIN.DATASET_NAMES=[CIFAR10] \
-# config.DATA.TRAIN.COPY_DESTINATION_DIR="/tmp/cifar10/" \
-# config.DATA.TRAIN.DATA_SOURCES=[disk_folder] \
-# config.DATA.TRAIN.LABEL_SOURCES=[disk_folder] \
-# config.DATA.TRAIN.DATASET_NAMES=[original_imagenet_1k] \
-
-# config.MODEL.WEIGHTS_INIT.PARAMS_FILE="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result/pretrain/pretrain_simclr_deit_t16_in1k__v1/model_phase50.torch"
-# config.MODEL.WEIGHTS_INIT.PARAMS_FILE="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result/pretrain/pretrain_simclr_deit_t16_in1k__v1/model_phase33.torch" \
-# config.MODEL.WEIGHTS_INIT.PARAMS_FILE="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result/pretrain/pretrain_simclr_imagenet1k_v1/model_phase15.torch"
-# /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result/pretrain/pretrain_simclr_deit_t16_224_v1/model_phase31.torch
-# config.MODEL.WEIGHTS_INIT.PARAMS_FILE="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result/pretrain/pretrain_simclr_imagenet1k_v1/model_phase15.torch" \
-# config.MODEL.WEIGHTS_INIT.STATE_DICT_KEY_NAME="" \
-# config.OPTIMIZER.num_epochs=3 \
-# --------------------------------------------------------------------------------------------------------
-# python /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/run_distributed_engines.py \
-#     hydra.verbose=true \
-#     config=/benchmark/fulltune/finetuning_simclr_deit.yaml \
-#     config.CHECKPOINT.DIR="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result/debug/v9/dg_finetuning_simclr_deit_t16_in1k_to_cifar100__v1" \
-#     config.DATA.TRAIN.DATA_SOURCES=[torchvision_dataset] \
-#     config.DATA.TRAIN.LABEL_SOURCES=[torchvision_dataset] \
-#     config.DATA.TRAIN.DATASET_NAMES=[CIFAR100] \
-#     config.DATA.TRAIN.COPY_DESTINATION_DIR="/tmp/cifar100/" \
-#     config.DATA.TEST.DATA_SOURCES=[torchvision_dataset] \
-#     config.DATA.TEST.LABEL_SOURCES=[torchvision_dataset] \
-#     config.DATA.TEST.COPY_DESTINATION_DIR="/tmp/cifar100/" \
-#     config.DATA.TEST.DATASET_NAMES=[CIFAR100] \
-#     config.DISTRIBUTED.NUM_NODES=1 \
-#     config.DISTRIBUTED.NUM_PROC_PER_NODE=4 \
-#     config.OPTIMIZER.num_epochs=100 \
-#     config.MODEL.WEIGHTS_INIT.PARAMS_FILE="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result/pretrain/pretrain_simclr_deit_t16_in1k__v1/model_phase50.torch"
-
-    # config.DATA.TRAIN.DATA_SOURCES=[torchvision_dataset] \
-    # config.DATA.TRAIN.LABEL_SOURCES=[torchvision_dataset] \
-    # config.DATA.TRAIN.DATASET_NAMES=[CIFAR10] \
-    # config.DATA.TRAIN.COPY_DESTINATION_DIR="/tmp/cifar10/" \
-    # config.DATA.TEST.DATA_SOURCES=[torchvision_dataset] \
-    # config.DATA.TEST.LABEL_SOURCES=[torchvision_dataset] \
-    # config.DATA.TEST.COPY_DESTINATION_DIR="/tmp/cifar10/" \
-    # config.DATA.TEST.DATASET_NAMES=[CIFAR10] \
+    # config.DISTRIBUTED.RUN_ID=$MASTER_ADDR$PORT \
+    # config.DISTRIBUTED.INIT_METHOD="file" \

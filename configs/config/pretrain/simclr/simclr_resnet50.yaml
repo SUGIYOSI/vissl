@@ -16,12 +16,14 @@ config:
       FLUSH_EVERY_N_MIN: 20
     CHECKPOINT:
       AUTO_RESUME: True
+      # MARK: check
       CHECKPOINT_FREQUENCY: 1
   DATA:
     NUM_DATALOADER_WORKERS: 5
     TRAIN:
       DATA_SOURCES: [disk_folder]
       DATASET_NAMES: [original_imagenet_1k]
+      # MARK: check
       BATCHSIZE_PER_REPLICA: 64
       LABEL_TYPE: sample_index    # just an implementation detail. Label isn't used
       TRANSFORMS:
@@ -79,7 +81,8 @@ config:
       weight_decay: 0.000001
       momentum: 0.9
       nesterov: False
-      num_epochs: 300
+      # MARK: check
+      num_epochs: 400
       regularize_bn: True
       regularize_bias: True
       param_schedulers:
@@ -87,7 +90,8 @@ config:
           auto_lr_scaling:
             auto_scale: true
             base_value: 0.3
-            base_lr_batch_size: 256
+            # MARK: check
+            base_lr_batch_size: 512
           name: composite
           schedulers:
             - name: linear
@@ -98,9 +102,10 @@ config:
               end_value: 0.0000
           update_interval: step
           interval_scaling: [rescaled, fixed]
+          # MARK: check
           # lengths: [0.1, 0.9]                 # 100ep
-          lengths: [0.05, 0.95]             # 200ep
-          # lengths: [0.025, 0.975]           # 400ep
+          # lengths: [0.05, 0.95]             # 200ep
+          lengths: [0.025, 0.975]           # 400ep
           # lengths: [0.02, 0.98]             # 500ep
           # lengths: [0.0166667, 0.9833333]   # 600ep
           # lengths: [0.0125, 0.9875]         # 800ep
@@ -113,9 +118,13 @@ config:
   TRAINER:
     TRAIN_STEP_NAME: standard_train_step
   DISTRIBUTED:
+    # MARK: check
     BACKEND: nccl
-    NUM_NODES: 1
+    NUM_NODES: 2
     NUM_PROC_PER_NODE: 4
-    RUN_ID: auto
+    INIT_METHOD: "tcp"
+    # RUN_ID: auto
+    RUN_ID: "localhost:52532"
+    NCCL_DEBUG: True
   MACHINE:
     DEVICE: gpu
