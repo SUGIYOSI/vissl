@@ -19,6 +19,9 @@ def get_node_id(node_id: int):
         node_name = str(os.environ["SLURMD_NODENAME"])
         node_id = int(os.environ.get("SLURM_NODEID"))
         logging.info(f"SLURM job: node_name: {node_name}, node_id: {node_id}")
+    # MARK: node_id
+    node_id = int(os.getenv('OMPI_COMM_WORLD_RANK', '0'))
+    print("node_id: ", node_id)
     return node_id
 
 
