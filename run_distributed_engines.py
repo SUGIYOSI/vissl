@@ -19,6 +19,7 @@ from vissl.utils.distributed_launcher import (
 )
 from vissl.utils.hydra_config import convert_to_attrdict, is_hydra_available
 from vissl.utils.slurm import is_submitit_available
+import os
 
 
 def hydra_main(overrides: List[Any]):
@@ -34,6 +35,12 @@ def hydra_main(overrides: List[Any]):
     with initialize_config_module(config_module="vissl.config"):
         cfg = compose("defaults", overrides=overrides)
     args, config = convert_to_attrdict(cfg)
+    # MARK: fetch run_id
+    master_addr = os.getenv("MASTER_ADDR", default="localhost").splitlines()[0]
+    master_port = os.getenv('MASTER_PORT', default='8888')
+    run_id = "{}:{}".format(master_addr, master_port)
+    print("run_id: ", run_id)
+    config.DISTRIBUTED.RUN_ID = run_id
 
     if config.SLURM.USE_SLURM:
         assert (
