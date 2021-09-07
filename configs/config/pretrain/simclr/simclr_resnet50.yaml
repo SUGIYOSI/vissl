@@ -24,7 +24,7 @@ config:
       DATA_SOURCES: [disk_folder]
       DATASET_NAMES: [original_imagenet_1k]
       # MARK: check
-      BATCHSIZE_PER_REPLICA: 64
+      BATCHSIZE_PER_REPLICA: 32
       LABEL_TYPE: sample_index    # just an implementation detail. Label isn't used
       TRANSFORMS:
         - name: ImgReplicatePil
