@@ -14,9 +14,10 @@ config:
       USE_TENSORBOARD: True
       FLUSH_EVERY_N_MIN: 20
   DATA:
-    NUM_DATALOADER_WORKERS: 5
+    NUM_DATALOADER_WORKERS: 2
     TRAIN:
-      BATCHSIZE_PER_REPLICA: 128
+      # MARK: check
+      BATCHSIZE_PER_REPLICA: 64
       TRANSFORMS:
         - name: RandomResizedCrop
           size: 224
@@ -28,7 +29,8 @@ config:
       MMAP_MODE: True
       COPY_TO_LOCAL_DISK: False
     TEST:
-      BATCHSIZE_PER_REPLICA: 128
+      # MARK: check
+      BATCHSIZE_PER_REPLICA: 64
       TRANSFORMS:
         - name: Resize
           size: 256
@@ -65,6 +67,7 @@ config:
     SYNC_BN_CONFIG:
       CONVERT_BN_TO_SYNC_BN: False
       SYNC_BN_TYPE: apex
+      # MARK: check
       GROUP_SIZE: 4
     AMP_PARAMS:
       USE_AMP: True
@@ -86,14 +89,15 @@ config:
           auto_lr_scaling:
             auto_scale: true
             base_value: 0.1
-            base_lr_batch_size: 512
-          values: [0.1, 0.01, 0.001]
-          milestones: [30, 60]
+            # MARK: check
+            base_lr_batch_size: 256
+          values: [0.1, 0.01, 0.001, 0.0001, 0.00001]
+          milestones: [30, 60, 90, 100]
           name: multistep
           update_interval: epoch
-          # update_interval: step
   DISTRIBUTED:
     BACKEND: nccl
+    # MARK: check
     NUM_NODES: 1
     NUM_PROC_PER_NODE: 4
     INIT_METHOD: tcp
