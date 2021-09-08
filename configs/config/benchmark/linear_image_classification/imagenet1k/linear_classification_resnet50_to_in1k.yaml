@@ -14,11 +14,13 @@ config:
       USE_TENSORBOARD: True
       FLUSH_EVERY_N_MIN: 20
   DATA:
-    NUM_DATALOADER_WORKERS: 5
+    NUM_DATALOADER_WORKERS: 2
     TRAIN:
       DATA_SOURCES: [disk_folder]
       LABEL_SOURCES: [disk_folder]
-      BATCHSIZE_PER_REPLICA: 128
+      DATASET_NAMES: [original_imagenet_1k]
+      # MARK: check
+      BATCHSIZE_PER_REPLICA: 64
       TRANSFORMS:
         - name: RandomResizedCrop
           size: 224
@@ -31,7 +33,9 @@ config:
     TEST:
       DATA_SOURCES: [disk_folder]
       LABEL_SOURCES: [disk_folder]
-      BATCHSIZE_PER_REPLICA: 128
+      DATASET_NAMES: [original_imagenet_1k]
+      # MARK: check
+      BATCHSIZE_PER_REPLICA: 64
       TRANSFORMS:
         - name: Resize
           size: 256
@@ -64,18 +68,15 @@ config:
       RESNETS:
         DEPTH: 50
     HEAD:
-      # MARK: eval_mlpを使用すると精度が上がる理由はチャネル数
       PARAMS: [
         ["eval_mlp", {"in_channels": 2048, "dims": [8192, 1000]}],
       ]
-      # PARAMS: [
-      #   ["mlp", {"dims": [2048, 1000]}],
-      # ]
     WEIGHTS_INIT:
       PARAMS_FILE: "specify model weights"
     SYNC_BN_CONFIG:
-      CONVERT_BN_TO_SYNC_BN: False
+      CONVERT_BN_TO_SYNC_BN: True
       SYNC_BN_TYPE: apex
+      # MARK: check
       GROUP_SIZE: 4
     AMP_PARAMS:
       USE_AMP: True
@@ -86,7 +87,6 @@ config:
       ignore_index: -1
   OPTIMIZER:
     name: sgd
-    # 検証必要
     weight_decay: 0.0005
     momentum: 0.9
     num_epochs: 28
@@ -98,13 +98,14 @@ config:
         auto_lr_scaling:
           auto_scale: true
           base_value: 0.01
-          base_lr_batch_size: 512
+          base_lr_batch_size: 256
         values: [0.01, 0.001, 0.0001, 0.00001]
         milestones: [8, 16, 24]
         name: multistep
         update_interval: epoch
   DISTRIBUTED:
     BACKEND: nccl
+    # MARK: check
     NUM_NODES: 1
     NUM_PROC_PER_NODE: 4
     INIT_METHOD: tcp
