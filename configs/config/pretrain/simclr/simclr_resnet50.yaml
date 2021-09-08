@@ -19,7 +19,7 @@ config:
       # MARK: check
       CHECKPOINT_FREQUENCY: 1
   DATA:
-    NUM_DATALOADER_WORKERS: 5
+    NUM_DATALOADER_WORKERS: 2
     TRAIN:
       DATA_SOURCES: [disk_folder]
       DATASET_NAMES: [original_imagenet_1k]

@@ -1,11 +1,11 @@
 #!/bin/bash
 #$ -cwd
-#$ -l rt_AF=8
-#$ -l h_rt=04:00:00
+#$ -l rt_AF=2
+#$ -l h_rt=05:00:00
 #$ -l USE_SSH=1
 #$ -v SSH_PORT=2299
 #$ -j y
-#$ -o /groups/gcd50666/acd13476wd/VISSL/vissl/execution_shells/output/debug/v2/pretrain_simclr_resnet50_in1k_A100_node_8__v1.o
+#$ -o /groups/gcd50666/acd13476wd/VISSL/vissl/execution_shells/output/debug/v2/pretrain_simclr_deit_t16_in1k_A100_node_2__v1.o
 
 # ======== env ========
 source /etc/profile.d/modules.sh
@@ -19,9 +19,9 @@ module list
 
 # ======== configs ========
 export NPERNODE=1
-export NUM_NODES=8
+export NUM_NODES=2
 export NUM_PROC=8
-export BATCHSIZE_FOR_GPU=64
+export BATCHSIZE_FOR_GPU=256
 export BATCHSIZE=$(($BATCHSIZE_FOR_GPU*$NUM_NODES*$NUM_PROC))
 export MASTER_ADDR=`echo $(/usr/sbin/ip a show dev bond0 | grep inet | cut -d " " -f 6 | cut -d "/" -f 1) | sed -e "s/[\r\n]\+//g"`
 export RUN_ID=${MASTER_ADDR%% *}:8888
@@ -32,8 +32,8 @@ echo `date`
 mpirun -npernode $NPERNODE -np $NUM_NODES \
 python /groups/gcd50666/acd13476wd/VISSL/vissl/run_distributed_engines.py \
     hydra.verbose=true \
-    config=/pretrain/simclr/simclr_resnet50.yaml \
-    config.CHECKPOINT.DIR="/groups/gcd50666/acd13476wd/VISSL/vissl/train_result/debug/other/v2/pretrain_simclr_resnet50_in1k_A100_node_8__v1" \
+    config=/pretrain/vision_transformer/simclr/simclr_deit_t16.yaml \
+    config.CHECKPOINT.DIR="/groups/gcd50666/acd13476wd/VISSL/vissl/train_result/debug/other/v2/pretrain_simclr_deit_t16_in1k_A100_node_2__v1" \
     config.DATA.TRAIN.DATASET_NAMES=[original_imagenet_1k] \
     config.DISTRIBUTED.NUM_NODES=$NUM_NODES \
     config.DISTRIBUTED.NUM_PROC_PER_NODE=$NUM_PROC \
