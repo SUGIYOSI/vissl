@@ -59,12 +59,13 @@ config:
         ["mlp", {"dims": [2048, 128]}],
       ]
     SYNC_BN_CONFIG:
-      CONVERT_BN_TO_SYNC_BN: True
-      SYNC_BN_TYPE: apex
+      CONVERT_BN_TO_SYNC_BN: False
+      SYNC_BN_TYPE: pytorch
       # MARK: check
       GROUP_SIZE: 4
     AMP_PARAMS:
       USE_AMP: True
+      AMP_TYPE: pytorch
       AMP_ARGS: {"opt_level": "O1"}
   LOSS:
       name: simclr_info_nce_loss
@@ -125,6 +126,6 @@ config:
     NUM_PROC_PER_NODE: 4
     # RUN_ID: auto
     RUN_ID: "localhost:52532"
-    NCCL_DEBUG: True
+    NCCL_DEBUG: False
   MACHINE:
     DEVICE: gpu

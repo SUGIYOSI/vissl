@@ -1,11 +1,11 @@
 #!/bin/bash
 #$ -cwd
-#$ -l rt_F=1
-#$ -l h_rt=01:00:00
+#$ -l rt_AF=1
+#$ -l h_rt=05:00:00
 #$ -l USE_SSH=1
 #$ -v SSH_PORT=2299
 #$ -j y
-#$ -o /groups/gcd50666/acd13476wd/VISSL/vissl/execution_shells/output/debug/v3/pretrain_simclr_deit_t16_in1k_V100_node_1__v1.o
+#$ -o /groups/gcd50666/acd13476wd/VISSL/vissl/execution_shells/output/debug/v2/pretrain_moco_resnet50_in1k_A100_node_1__v1.o
 
 # ======== env ========
 source /etc/profile.d/modules.sh
@@ -13,18 +13,15 @@ source /etc/profile.d/modules.sh
 # source /groups/gcd50666/acd13476wd/VISSL/VISSL_386/bin/activate
 # module load openmpi/3.1.6 cuda/10.2/10.2.89
 # MARK: for A100
-# source /groups/gcd50666/acd13476wd/VISSL/VISSL_A100_386/bin/activate
-# module load cuda/11.1/11.1.1 openmpi/3.1.6
-source /groups/gcd50666/acd13476wd/VISSL/ENVS/VISSL_371_cuda_102/bin/activate
-module load cuda/10.2/10.2.89 cudnn/7.6/7.6.5 nccl/2.7/2.7.8-1 openmpi/2.1.6 gcc/7.4.0
-
+source /groups/gcd50666/acd13476wd/VISSL/VISSL_A100_386/bin/activate
+module load cuda/11.1/11.1.1 openmpi/3.1.6
 module list
 
 # ======== configs ========
 export NPERNODE=1
 export NUM_NODES=1
-export NUM_PROC=4
-export BATCHSIZE_FOR_GPU=64
+export NUM_PROC=8
+export BATCHSIZE_FOR_GPU=32
 export BATCHSIZE=$(($BATCHSIZE_FOR_GPU*$NUM_NODES*$NUM_PROC))
 export MASTER_ADDR=`echo $(/usr/sbin/ip a show dev bond0 | grep inet | cut -d " " -f 6 | cut -d "/" -f 1) | sed -e "s/[\r\n]\+//g"`
 export RUN_ID=${MASTER_ADDR%% *}:8888
@@ -35,8 +32,8 @@ echo `date`
 mpirun -npernode $NPERNODE -np $NUM_NODES \
 python /groups/gcd50666/acd13476wd/VISSL/vissl/run_distributed_engines.py \
     hydra.verbose=true \
-    config=/pretrain/vision_transformer/simclr/simclr_deit_t16.yaml \
-    config.CHECKPOINT.DIR="/groups/gcd50666/acd13476wd/VISSL/vissl/train_result/debug/other/v3/pretrain_simclr_deit_t16_in1k_V100_node_1__v1" \
+    config=/pretrain/moco/moco_1node_resnet.yaml \
+    config.CHECKPOINT.DIR="/groups/gcd50666/acd13476wd/VISSL/vissl/train_result/debug/other/v2/pretrain_moco_resnet50_in1k_A100_node_1__v1" \
     config.DATA.TRAIN.DATASET_NAMES=[original_imagenet_1k] \
     config.DISTRIBUTED.NUM_NODES=$NUM_NODES \
     config.DISTRIBUTED.NUM_PROC_PER_NODE=$NUM_PROC \
