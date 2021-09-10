@@ -28,12 +28,12 @@
         "val": ["<img_path>", "<lbl_path>"]
     },
     "CIFAR10": {
-        "train": ["<path_to_pytorch_dataset>", "<unused>"],
-        "val": ["<path_to_pytorch_dataset>", "<unused>"]
+        "train": ["/gs/hs0/tga-i/sugiyama.y.al/datasets/CIFAR_10/train", "/gs/hs0/tga-i/sugiyama.y.al/datasets/CIFAR_10/train"],
+        "val": ["/gs/hs0/tga-i/sugiyama.y.al/datasets/CIFAR_10/validation", "/gs/hs0/tga-i/sugiyama.y.al/datasets/CIFAR_10/validation"]
     },
     "CIFAR100": {
-        "train": ["<path_to_pytorch_dataset>", "<unused>"],
-        "val": ["<path_to_pytorch_dataset>", "<unused>"]
+        "train": ["/gs/hs0/tga-i/sugiyama.y.al/datasets/CIFAR_100/train", "/gs/hs0/tga-i/sugiyama.y.al/datasets/CIFAR_100/train"],
+        "val": ["/gs/hs0/tga-i/sugiyama.y.al/datasets/CIFAR_100/validation", "/gs/hs0/tga-i/sugiyama.y.al/datasets/CIFAR_100/validation"]
     },
     "STL10": {
         "train": ["<path_to_pytorch_dataset>", "<unused>"],
@@ -131,10 +131,6 @@
         "train": ["<img_path>", "<lbl_path>"],
         "val": ["<img_path>", "<lbl_path>"]
     },
-    "kinetics700_frames_folder": {
-        "train": ["<img_path>", "<ignore>"],
-        "val": ["<img_path>", "<ignore>"]
-    },
     "voc2007_folder": {
         "train": ["<root_folder>", "<root_folder>"],
         "val": ["<root_folder>", "<root_folder>"]
@@ -160,6 +156,50 @@
         "val": ["<img_path>", "<lbl_path>"]
     },
     "google-imagenet1k-per10": {
+        "train": ["<img_path>", "<lbl_path>"],
+        "val": ["<img_path>", "<lbl_path>"]
+    },
+    "dummy_data_folder": {
+        "train": ["<img_path>", "<lbl_path>"],
+        "val": ["<img_path>", "<lbl_path>"]
+    },
+    "original_imagenet_1k": {
+        "train": ["/groups/gcd50666/acd13476wd/datasets/imagenet_1k/train", "/groups/gcd50666/acd13476wd/datasets/imagenet_1k/train"],
+        "val": ["/groups/gcd50666/acd13476wd/datasets/imagenet_1k/validation", "/groups/gcd50666/acd13476wd/datasets/imagenet_1k/validation"]
+    },
+    "fakeimagenet_v1_1k": {
+        "train": ["<img_path>", "<lbl_path>"],
+        "val": ["<img_path>", "<lbl_path>"]
+    },
+    "fakeimagenet_v2_1k": {
+        "train": ["<img_path>", "<lbl_path>"],
+        "val": ["<img_path>", "<lbl_path>"]
+    },
+    "original_imagenet_1k_01": {
+        "train": ["<img_path>", "<lbl_path>"],
+        "val": ["<img_path>", "<lbl_path>"]
+    },
+    "original_imagenet_1k_05": {
+        "train": ["<img_path>", "<lbl_path>"],
+        "val": ["<img_path>", "<lbl_path>"]
+    },
+    "original_imagenet_1k_10": {
+        "train": ["<img_path>", "<lbl_path>"],
+        "val": ["<img_path>", "<lbl_path>"]
+    },
+    "original_imagenet_1k_50": {
+        "train": ["<img_path>", "<lbl_path>"],
+        "val": ["<img_path>", "<lbl_path>"]
+    },
+    "fakeimagenet_v1_1k_01": {
+        "train": ["<img_path>", "<lbl_path>"],
+        "val": ["<img_path>", "<lbl_path>"]
+    },
+    "fakeimagenet_v1_1k_05": {
+        "train": ["<img_path>", "<lbl_path>"],
+        "val": ["<img_path>", "<lbl_path>"]
+    },
+    "fakeimagenet_v1_1k_10": {
         "train": ["<img_path>", "<lbl_path>"],
         "val": ["<img_path>", "<lbl_path>"]
     }
