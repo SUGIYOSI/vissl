@@ -19,7 +19,7 @@ config:
       # MARK: check
       CHECKPOINT_FREQUENCY: 1
   DATA:
-    NUM_DATALOADER_WORKERS: 2
+    NUM_DATALOADER_WORKERS: 10
     TRAIN:
       DATA_SOURCES: [disk_folder]
       DATASET_NAMES: [original_imagenet_1k]
@@ -125,7 +125,7 @@ config:
     NUM_NODES: 1
     NUM_PROC_PER_NODE: 4
     # RUN_ID: auto
-    RUN_ID: "localhost:52532"
+    RUN_ID: "60215"
     NCCL_DEBUG: False
   MACHINE:
     DEVICE: gpu

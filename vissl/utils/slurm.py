@@ -14,11 +14,11 @@ def get_node_id(node_id: int):
     SLURM_NODEID to get information about the current node.
     Useful to set the node_id automatically.
     """
-    node_list = os.environ.get("SLURM_STEP_NODELIST")
-    if node_list is not None:
-        node_name = str(os.environ["SLURMD_NODENAME"])
-        node_id = int(os.environ.get("SLURM_NODEID"))
-        logging.info(f"SLURM job: node_name: {node_name}, node_id: {node_id}")
+    # node_list = os.environ.get("SLURM_STEP_NODELIST")
+    # if node_list is not None:
+    #     node_name = str(os.environ["SLURMD_NODENAME"])
+    #     node_id = int(os.environ.get("SLURM_NODEID"))
+    #     logging.info(f"SLURM job: node_name: {node_name}, node_id: {node_id}")
     # MARK: node_id
     node_id = int(os.getenv('OMPI_COMM_WORLD_RANK', '0'))
     print("node_id: ", node_id)
