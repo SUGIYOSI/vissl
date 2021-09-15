@@ -108,7 +108,8 @@ class SelfSupervisionTrainer(object):
         # we overwrite the distributed trainer setup here with our config options
         distributed_world_size = int(os.environ["WORLD_SIZE"])
         assert distributed_world_size % self.cfg.DISTRIBUTED.NUM_NODES == 0
-        init_method = f"{self.cfg.DISTRIBUTED.INIT_METHOD}://{self.dist_run_id}"
+        # init_method = f"{self.cfg.DISTRIBUTED.INIT_METHOD}://{self.dist_run_id}"
+        init_method = f"{self.cfg.DISTRIBUTED.INIT_METHOD}://{self.cfg.DISTRIBUTED.HOST}:{self.dist_run_id}"
         logging.info(
             f"Using Distributed init method: {init_method}, "
             f"world_size: {distributed_world_size}, rank: {self.distributed_rank}"

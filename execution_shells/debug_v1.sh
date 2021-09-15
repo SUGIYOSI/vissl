@@ -43,7 +43,7 @@ mpirun -npernode $NPERNODE -np $NUM_NODES \
 python /groups/gcd50666/acd13476wd/VISSL/vissl/tools/run_distributed_engines.py \
     hydra.verbose=true \
     config=/pretrain/simclr/simclr_resnet50.yaml \
-    config.CHECKPOINT.DIR="/groups/gcd50666/acd13476wd/VISSL/vissl/train_result/debug/other/v4/pretrain_simclr_resnet50_in1k_V100_node_1__v2" \
+    config.CHECKPOINT.DIR="/groups/gcd50666/acd13476wd/VISSL/vissl/train_result/debug/other/v5/pretrain_simclr_resnet50_in1k_V100_node_1__v2" \
     config.DATA.TRAIN.DATASET_NAMES=[original_imagenet_1k] \
     config.DISTRIBUTED.NUM_NODES=$NUM_NODES \
     config.DISTRIBUTED.NUM_PROC_PER_NODE=$NUM_PROC \
