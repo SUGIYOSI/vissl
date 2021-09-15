@@ -6,7 +6,7 @@
 import logging
 import pprint
 import sys
-from typing import Any, List
+from typing import Any, List, Tuple
 
 import torch
 from omegaconf import DictConfig, OmegaConf
@@ -21,7 +21,9 @@ def save_attrdict_to_disk(cfg: AttrDict):
     save_file(cfg.to_dict(), yaml_output_file)
 
 
-def convert_to_attrdict(cfg: DictConfig, cmdline_args: List[Any] = None):
+def convert_to_attrdict(
+    cfg: DictConfig, cmdline_args: List[Any] = None, dump_config: bool = True
+):
     """
     Given the user input Hydra Config, and some command line input options
     to override the config file:
@@ -52,7 +54,8 @@ def convert_to_attrdict(cfg: DictConfig, cmdline_args: List[Any] = None):
     # assert the config and infer
     config = cfg.config
     infer_and_assert_hydra_config(config)
-    save_attrdict_to_disk(config)
+    if dump_config:
+        save_attrdict_to_disk(config)
     convert_fsdp_dtypes(config)
     return cfg, config
 
@@ -81,13 +84,57 @@ def is_hydra_available():
     return hydra_available
 
 
+def get_hydra_version() -> Tuple[int, ...]:
+    import hydra
+
+    return tuple(int(x) for x in hydra.__version__.split("."))
+
+
+def assert_hydra_dependency():
+    """
+    Check if Hydra is available. Simply python import to test.
+    Also verifies whether the version is up to date.
+    """
+    min_hydra_version = (1, 0, 7)
+    min_hydra_version_str = ".".join(str(x) for x in min_hydra_version)
+    install_command = f"pip install hydra-core=={min_hydra_version_str}"
+    assert is_hydra_available(), f"Make sure to install Hydra: {install_command}"
+    upgrade_message = f"Please upgrade Hydra: {install_command}"
+    assert get_hydra_version() >= min_hydra_version, upgrade_message
+
+
+def compose_hydra_configuration(overrides: List[str]):
+    """
+    Transform the list of overrides provided on the command line
+    to an actual VISSL configuration by merging these overrides
+    with the defaults configuration of VISSL
+    """
+    assert_hydra_dependency()
+
+    # Backward compatibility with previous hydra versions:
+    # In Hydra 1.1 and above, the compose API is not experimental anymore
+    if get_hydra_version() >= (1, 1, 0):
+        from hydra import initialize_config_module, compose
+    else:
+        from hydra.experimental import initialize_config_module, compose
+
+    # Compose the overrides with "vissl/config/defaults.yaml"
+    with initialize_config_module(config_module="vissl.config"):
+        return compose("defaults", overrides=overrides)
+
+
 def print_cfg(cfg):
     """
     Supports printing both Hydra DictConfig and also the AttrDict config
     """
     logging.info("Training with config:")
     if isinstance(cfg, DictConfig):
-        logging.info(cfg.pretty())
+        if hasattr(cfg, "pretty"):
+            # Backward compatibility
+            logging.info(cfg.pretty())
+        else:
+            # Newest version of OmegaConf
+            logging.info(OmegaConf.to_yaml(cfg))
     else:
         logging.info(pprint.pformat(cfg))
 
@@ -304,13 +351,12 @@ def infer_losses_config(cfg):
     train_transforms = cfg.DATA.TRAIN.TRANSFORMS
     total_num_crops = next(
         (
-            transform
+            transform["total_num_crops"]
             for transform in train_transforms
-            if transform["name"] == "ImgPilToMultiCrop"
+            if "total_num_crops" in transform
         ),
         None,
     )
-    total_num_crops = total_num_crops["total_num_crops"] if total_num_crops else None
 
     # some inference for the Info-NCE loss.
     if "simclr_info_nce_loss" in cfg.LOSS.name:
@@ -338,7 +384,9 @@ def infer_losses_config(cfg):
         cfg.LOSS.multicrop_simclr_info_nce_loss.buffer_params.effective_batch_size = (
             batch_size * world_size
         )
-        cfg.LOSS.multicrop_simclr_info_nce_loss.num_crops = total_num_crops
+        cfg.LOSS.multicrop_simclr_info_nce_loss.num_crops = (
+            total_num_crops or cfg.LOSS.multicrop_simclr_info_nce_loss.num_crops
+        )
         cfg.DATA.TRAIN.COLLATE_FUNCTION = "multicrop_collator"
 
     # some inference for the DeepCluster-v2 loss.
@@ -347,7 +395,9 @@ def infer_losses_config(cfg):
         cfg.LOSS.deepclusterv2_loss.BATCHSIZE_PER_REPLICA = (
             cfg.DATA.TRAIN.BATCHSIZE_PER_REPLICA
         )
-        cfg.LOSS.deepclusterv2_loss.num_crops = total_num_crops
+        cfg.LOSS.deepclusterv2_loss.num_crops = (
+            total_num_crops or cfg.LOSS.deepclusterv2_loss.num_crops
+        )
         cfg.DATA.TRAIN.COLLATE_FUNCTION = "multicrop_collator"
 
     # some inference for the SwAV loss.
@@ -364,7 +414,7 @@ def infer_losses_config(cfg):
         )
         cfg.LOSS.swav_loss.num_prototypes = cfg.MODEL.HEAD.PARAMS[0][1]["num_clusters"]
         cfg.LOSS.swav_loss.embedding_dim = cfg.MODEL.HEAD.PARAMS[0][1]["dims"][-1]
-        cfg.LOSS.swav_loss.num_crops = total_num_crops
+        cfg.LOSS.swav_loss.num_crops = total_num_crops or cfg.LOSS.swav_loss.num_crops
         from vissl.utils.checkpoint import get_checkpoint_folder
 
         cfg.LOSS.swav_loss.output_dir = get_checkpoint_folder(cfg)
@@ -387,7 +437,9 @@ def infer_losses_config(cfg):
             -1
         ]
 
-        cfg.LOSS.swav_momentum_loss.num_crops = total_num_crops
+        cfg.LOSS.swav_momentum_loss.num_crops = (
+            total_num_crops or cfg.LOSS.swav_momentum_loss.num_crops
+        )
         cfg.DATA.TRAIN.COLLATE_FUNCTION = "multicrop_collator"
         world_size = cfg.DISTRIBUTED.NUM_NODES * cfg.DISTRIBUTED.NUM_PROC_PER_NODE
         batch_size = cfg.DATA.TRAIN.BATCHSIZE_PER_REPLICA
@@ -404,7 +456,7 @@ def infer_losses_config(cfg):
         assert len(cfg.MODEL.HEAD.PARAMS) == 1
         assert cfg.MODEL.HEAD.PARAMS[0][0] == "swav_head"
         cfg.LOSS.dino_loss.output_dim = cfg.MODEL.HEAD.PARAMS[0][1]["num_clusters"][0]
-        cfg.LOSS.dino_loss.num_crops = cfg.DATA.TRAIN.TRANSFORMS[0]["total_num_crops"]
+        cfg.LOSS.dino_loss.num_crops = total_num_crops or cfg.LOSS.dino_loss.num_crops
         cfg.DATA.TRAIN.COLLATE_FUNCTION = "multicrop_collator"
 
     return cfg
@@ -533,12 +585,22 @@ def infer_and_assert_hydra_config(cfg):
         # Inference of optimizer configuration
         if cfg["OPTIMIZER"]["use_larc"]:
             cfg["OPTIMIZER"]["name"] = "sgd_fsdp"
+            # if using LARC, we set the flatten_params=False so that we can
+            # compute the right params groups
+            cfg["MODEL"]["FSDP_CONFIG"]["flatten_parameters"] = False
 
         # AMP based inference
         if cfg["MODEL"]["AMP_PARAMS"]["USE_AMP"]:
             cfg["MODEL"]["AMP_PARAMS"]["AMP_TYPE"] = "pytorch"
             cfg["MODEL"]["FSDP_CONFIG"]["mixed_precision"] = True
-            cfg["MODEL"]["FSDP_CONFIG"]["fp32_reduce_scatter"] = True
+            # setup the compute_dtype and fp32_reduce_scatter
+            # based on whether O1 or O2 is desired
+            if cfg.MODEL.FSDP_CONFIG["AMP_TYPE"] == "O1":
+                cfg["MODEL"]["FSDP_CONFIG"]["compute_dtype"] = "float32"
+                cfg["MODEL"]["FSDP_CONFIG"]["fp32_reduce_scatter"] = True
+            elif cfg.MODEL.FSDP_CONFIG["AMP_TYPE"] == "O2":
+                cfg["MODEL"]["FSDP_CONFIG"]["compute_dtype"] = "float16"
+                cfg["MODEL"]["FSDP_CONFIG"]["fp32_reduce_scatter"] = False
         else:
             # if not using AMP, we can't use mixed_precision as it requires PyTorch AMP
             cfg["MODEL"]["FSDP_CONFIG"]["mixed_precision"] = False
@@ -567,6 +629,8 @@ def infer_and_assert_hydra_config(cfg):
     # Delete the AUTO_SETUP_FSDP key since we send the FSDP_CONFIG
     # to FSDP from fairscale which doesn't know about AUTO_SETUP_FSDP
     del cfg.MODEL.FSDP_CONFIG["AUTO_SETUP_FSDP"]
+    del cfg.MODEL.FSDP_CONFIG["AMP_TYPE"]
+    logging.info(f"Using the FSDP config: {cfg.MODEL.FSDP_CONFIG}")
 
     if cfg.DATA.TRAIN.BASE_DATASET == "generic_ssl":
         assert (

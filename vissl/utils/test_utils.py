@@ -3,15 +3,17 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+import functools
 import os
 import re
 import tempfile
 from contextlib import contextmanager
 from dataclasses import dataclass
-from typing import List, Tuple
+from typing import Any, Callable, List, Tuple
 
 import torch
 import torch.distributed as dist
+import torch.multiprocessing as mp
 from vissl.config.attr_dict import AttrDict
 from vissl.hooks import default_hook_generator
 from vissl.utils.distributed_launcher import launch_distributed
@@ -76,10 +78,16 @@ def gpu_test(gpu_count: int = 1):
     Annotation for GPU tests, skipping the test if the
     required amount of GPU is not available
     """
-    import unittest
 
-    message = f"Not enough GPUs to run the test: required {gpu_count}"
-    return unittest.skipIf(torch.cuda.device_count() < gpu_count, message)
+    def gpu_test_decorator(test_function: Callable):
+        @functools.wraps(test_function)
+        def wrapped_test(*args, **kwargs):
+            if torch.cuda.device_count() >= gpu_count:
+                return test_function(*args, **kwargs)
+
+        return wrapped_test
+
+    return gpu_test_decorator
 
 
 def init_distributed_on_file(world_size: int, gpu_id: int, sync_file: str):
@@ -94,6 +102,28 @@ def init_distributed_on_file(world_size: int, gpu_id: int, sync_file: str):
         world_size=world_size,
         rank=gpu_id,
     )
+
+
+def _distributed_test_worker(
+    gpu_id: int, gpu_count: int, sync_file: str, worker_fn: Callable, *args
+):
+    init_distributed_on_file(world_size=gpu_count, gpu_id=gpu_id, sync_file=sync_file)
+    worker_fn(gpu_id, *args)
+
+
+def spawn_distributed_test(
+    gpu_count: int, worker_fn: Callable, args: Tuple[Any, ...] = ()
+):
+    """
+    Helper function to help write distributed test and reduce the boilerplate
+    code of such tests
+    """
+    with with_temp_files(count=1) as sync_file:
+        mp.spawn(
+            _distributed_test_worker,
+            (gpu_count, sync_file, worker_fn) + args,
+            nprocs=gpu_count,
+        )
 
 
 def parse_losses_from_log_file(file_name: str):
