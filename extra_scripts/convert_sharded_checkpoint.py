@@ -18,8 +18,12 @@ Example:
 
 import argparse
 import enum
+import os
 
+from fvcore.common.file_io import PathManager
 from vissl.utils.checkpoint import CheckpointFormatConverter
+from vissl.utils.env import setup_path_manager
+from vissl.utils.io import makedir
 from vissl.utils.logger import setup_logging, shutdown_logging
 
 
@@ -37,6 +41,13 @@ class CheckpointType(enum.Enum):
 
 
 def convert_checkpoint(input_path: str, output_path: str, output_type: str):
+    assert PathManager.exists(
+        input_path
+    ), f"Checkpoint input path: {input_path} not found."
+
+    # Make the output directory if it doesn't exist.
+    makedir(os.path.split(output_path)[0])
+
     setup_logging(__name__)
     if output_type == CheckpointType.consolidated.name:
         CheckpointFormatConverter.sharded_to_consolidated_checkpoint(
@@ -59,4 +70,7 @@ if __name__ == "__main__":
         help=f"Output format of the checkpoint ({CheckpointType.consolidated.name}, {CheckpointType.sliced.name})",
     )
     args = parser.parse_args()
+
+    setup_path_manager()
+
     convert_checkpoint(args.input, args.output, args.type)

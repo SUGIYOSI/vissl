@@ -9,14 +9,13 @@ import unittest
 import torch
 import torch.multiprocessing as mp
 from classy_vision.optim import build_optimizer
-from hydra.experimental import compose, initialize_config_module
 from torch.nn.parallel import DistributedDataParallel
 from vissl.losses.swav_loss import SwAVLoss
 from vissl.models import build_model
 from vissl.optimizers import *  # noqa
 from vissl.utils.fsdp_utils import fsdp_wrapper
-from vissl.utils.hydra_config import convert_to_attrdict
-from vissl.utils.test_utils import init_distributed_on_file, with_temp_files
+from vissl.utils.hydra_config import compose_hydra_configuration, convert_to_attrdict
+from vissl.utils.test_utils import gpu_test, init_distributed_on_file, with_temp_files
 
 
 class TestRegnetFSDP(unittest.TestCase):
@@ -29,24 +28,22 @@ class TestRegnetFSDP(unittest.TestCase):
     def _create_pretraining_config(
         with_fsdp: bool, with_activation_checkpointing: bool, with_larc: bool
     ):
-        with initialize_config_module(config_module="vissl.config"):
-            cfg = compose(
-                "defaults",
-                overrides=[
-                    "config=pretrain/swav/swav_8node_resnet",
-                    "+config/pretrain/swav/models=regnet16Gf",
-                    "config.SEED_VALUE=2",
-                    "config.MODEL.AMP_PARAMS.USE_AMP=True",
-                    "config.MODEL.AMP_PARAMS.AMP_TYPE=pytorch",
-                    "config.MODEL.SYNC_BN_CONFIG.CONVERT_BN_TO_SYNC_BN=True",
-                    "config.MODEL.SYNC_BN_CONFIG.SYNC_BN_TYPE=pytorch",
-                    f"config.OPTIMIZER.use_larc={with_larc}",
-                    "config.LOSS.swav_loss.epsilon=0.03",
-                    "config.MODEL.FSDP_CONFIG.flatten_parameters=True",
-                    "config.MODEL.FSDP_CONFIG.mixed_precision=False",
-                    "config.MODEL.FSDP_CONFIG.fp32_reduce_scatter=False",
-                ],
-            )
+        cfg = compose_hydra_configuration(
+            [
+                "config=pretrain/swav/swav_8node_resnet",
+                "+config/pretrain/swav/models=regnet16Gf",
+                "config.SEED_VALUE=2",
+                "config.MODEL.AMP_PARAMS.USE_AMP=True",
+                "config.MODEL.AMP_PARAMS.AMP_TYPE=pytorch",
+                "config.MODEL.SYNC_BN_CONFIG.CONVERT_BN_TO_SYNC_BN=True",
+                "config.MODEL.SYNC_BN_CONFIG.SYNC_BN_TYPE=pytorch",
+                f"config.OPTIMIZER.use_larc={with_larc}",
+                "config.LOSS.swav_loss.epsilon=0.03",
+                "config.MODEL.FSDP_CONFIG.flatten_parameters=True",
+                "config.MODEL.FSDP_CONFIG.mixed_precision=False",
+                "config.MODEL.FSDP_CONFIG.fp32_reduce_scatter=False",
+            ],
+        )
         args, config = convert_to_attrdict(cfg)
         if with_fsdp:
             config["MODEL"]["TRUNK"]["NAME"] = "regnet_fsdp"
@@ -130,7 +127,7 @@ class TestRegnetFSDP(unittest.TestCase):
                 nprocs=2,
             )
 
-    @unittest.skipIf(torch.cuda.device_count() < 2, "Not enough GPUs to run the test")
+    @gpu_test(gpu_count=2)
     def test_regnet_fsdp_convergence_on_swav(self):
         """
         Run SWAV architecture with DDP or with FSDP with or without
@@ -164,7 +161,7 @@ class TestRegnetFSDP(unittest.TestCase):
             self.assertEqual(results[0], results[1], "DDP vs FSDP")
             self.assertEqual(results[1], results[2], "Activation checkpointing")
 
-    @unittest.skipIf(torch.cuda.device_count() < 2, "Not enough GPUs to run the test")
+    @gpu_test(gpu_count=2)
     def test_regnet_fsdp_convergence_on_swav_with_larc(self):
         """
         Run SWAV architecture with DDP or with FSDP with or without

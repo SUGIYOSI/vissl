@@ -13,7 +13,6 @@ from extra_scripts.create_low_shot_samples import (
     generate_low_shot_samples,
     generate_places_low_shot_samples,
 )
-from hydra.experimental import compose, initialize_config_module
 from vissl.config import AttrDict
 from vissl.data import dataset_catalog
 from vissl.hooks import default_hook_generator
@@ -21,7 +20,11 @@ from vissl.models.model_helpers import get_trunk_output_feature_names
 from vissl.utils.checkpoint import get_checkpoint_folder
 from vissl.utils.distributed_launcher import launch_distributed
 from vissl.utils.env import set_env_vars
-from vissl.utils.hydra_config import convert_to_attrdict, is_hydra_available, print_cfg
+from vissl.utils.hydra_config import (
+    compose_hydra_configuration,
+    convert_to_attrdict,
+    print_cfg,
+)
 from vissl.utils.io import load_file
 from vissl.utils.logger import setup_logging, shutdown_logging
 from vissl.utils.misc import merge_features
@@ -39,9 +42,9 @@ def train_voc07_low_shot(
     low_shot_trainer = SVMLowShotTrainer(
         cfg["SVM"], layer=layername, output_dir=output_dir
     )
-    train_data = merge_features(output_dir, "train", layername, cfg)
+    train_data = merge_features(output_dir, "train", layername)
     train_features, train_targets = train_data["features"], train_data["targets"]
-    test_data = merge_features(output_dir, "test", layername, cfg)
+    test_data = merge_features(output_dir, "test", layername)
     test_features, test_targets = test_data["features"], test_data["targets"]
     # now we want to create the low-shot samples based on the kind of dataset.
     # We only create low-shot samples for training. We test on the full dataset.
@@ -81,11 +84,11 @@ def train_sample_places_low_shot(
 
     for low_shot_kvalue in k_values:
         checkpoint_dir = f"{output_dir}/sample{sample_num}_k{low_shot_kvalue}"
-        train_data = merge_features(checkpoint_dir, "train", layername, cfg)
+        train_data = merge_features(checkpoint_dir, "train", layername)
         train_features = train_data["features"]
         train_targets = train_data["targets"]
         checkpoint_dir = f"{output_dir}/sample{sample_inds[0]}_k{k_values[0]}"
-        test_data = merge_features(checkpoint_dir, "test", layername, cfg)
+        test_data = merge_features(checkpoint_dir, "test", layername)
         test_features = test_data["features"]
         test_targets = test_data["targets"]
         low_shot_trainer.train(
@@ -239,13 +242,11 @@ def main(args: Namespace, cfg: AttrDict):
 
 
 def hydra_main(overrides: List[Any]):
-    with initialize_config_module(config_module="vissl.config"):
-        cfg = compose("defaults", overrides=overrides)
+    cfg = compose_hydra_configuration(overrides)
     args, config = convert_to_attrdict(cfg)
     main(args, config)
 
 
 if __name__ == "__main__":
     overrides = sys.argv[1:]
-    assert is_hydra_available(), "Make sure to install hydra"
     hydra_main(overrides=overrides)

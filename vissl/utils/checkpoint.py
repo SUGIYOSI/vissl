@@ -20,7 +20,7 @@ from fairscale.nn import FullyShardedDataParallel
 from fvcore.common.file_io import PathManager
 from vissl.config import AttrDict
 from vissl.utils.env import get_machine_local_and_dist_rank
-from vissl.utils.io import create_file_symlink, makedir
+from vissl.utils.io import abspath, create_file_symlink, makedir
 from vissl.utils.layer_memory_tracking import null_context
 
 
@@ -278,14 +278,19 @@ class CheckpointFormatConverter:
     @classmethod
     def _read_shards(cls, input_checkpoint_path: str, device="cpu"):
         logging.info(f"Reading sharded checkpoint from: {input_checkpoint_path}")
-        checkpoint = torch.load(input_checkpoint_path, map_location=device)
+        with PathManager.open(input_checkpoint_path, "rb") as f:
+            checkpoint = torch.load(f, map_location=device)
+
         assert checkpoint["type"] == CheckpointItemType.shard_list.name
         weights, metadata = [], []
         for shard_path in checkpoint["shards"]:
             if not os.path.isabs(shard_path):
                 checkpoint_folder = os.path.split(input_checkpoint_path)[0]
                 shard_path = os.path.join(checkpoint_folder, shard_path)
-            shard_content = torch.load(shard_path, map_location=device)
+
+            with PathManager.open(shard_path, "rb") as f:
+                shard_content = torch.load(f, map_location=device)
+
             trunk_data = shard_content["classy_state_dict"]["base_model"]["model"][
                 "trunk"
             ]
@@ -348,10 +353,10 @@ class SlicedCheckpointLoader:
         - return the created file name
         """
         checkpoint_sub_folder = os.path.splitext(checkpoint_path)[0] + "_layers"
-        os.makedirs(checkpoint_sub_folder, exist_ok=True)
+        makedir(checkpoint_sub_folder)
         hash_name = hashlib.sha1(param_path.encode()).hexdigest()
-        file_path = os.path.join(f"{checkpoint_sub_folder}", f"{hash_name}.torch")
-        file_path = os.path.abspath(file_path)
+        file_path = os.path.join(checkpoint_sub_folder, f"{hash_name}.torch")
+        file_path = abspath(file_path)
         checkpoint_slice = {"type": CheckpointItemType.slice.name, "weight": param}
         with PathManager.open(file_path, "wb") as f:
             torch.save(checkpoint_slice, f)
@@ -381,7 +386,8 @@ class SlicedCheckpointLoader:
         weight_path = cls._clean_path(weight_path)
         file_name = checkpoint["layers"].get(weight_path, None)
         assert file_name is not None, f"Could not find buffer: {weight_path}"
-        layer_checkpoint = torch.load(file_name)
+        with PathManager.open(file_name, "rb") as f:
+            layer_checkpoint = torch.load(f)
         assert layer_checkpoint["type"] == CheckpointItemType.slice.name
         weight.copy_(layer_checkpoint["weight"])
 

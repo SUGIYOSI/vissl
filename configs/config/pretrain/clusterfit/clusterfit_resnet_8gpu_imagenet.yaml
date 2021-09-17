@@ -14,7 +14,7 @@ config:
     TRAIN:
       DATA_SOURCES: [disk_filelist]
       LABEL_SOURCES: [disk_filelist]  # npy file containing the cluster labels
-      DATASET_NAMES: [imagenet1k_clusters_rotnetin1k]
+      DATASET_NAMES: [imagenet1k_clusters]
       BATCHSIZE_PER_REPLICA: 32
       TRANSFORMS:
         - name: RandomResizedCrop
@@ -33,7 +33,9 @@ config:
       COPY_TO_LOCAL_DISK: False
       COPY_DESTINATION_DIR: /tmp/imagenet1k_clusters_rotnetin1k/
   METERS:
+    name: accuracy_list_meter
     accuracy_list_meter:
+      meter_names: ["clusters"]
       num_meters: 1
       topk_values: [1]
   TRAINER:
