@@ -3,7 +3,7 @@
 #$ -l f_node=1
 #$ -l h_rt=24:00:00
 #$ -j y
-#$ -o /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/execution_shells/output/finetuning/o.finetuning_simclr_deit_t16_fake1k_v2_01_to_cifar10__v1
+#$ -o /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/execution_shells/output/debug/v1/o.pretrain_simclr_resnet50_in1k_p100_node_4__v6
 
 source /gs/hs0/tga-i/sugiyama.y.al/VISSL/VISSL_386/bin/activate
 module load cuda/10.2.89
@@ -13,7 +13,7 @@ echo `date`
 python /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/run_distributed_engines.py \
     hydra.verbose=true \
     config=/benchmark/fulltune/finetuning_simclr_deit.yaml \
-    config.CHECKPOINT.DIR="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result/finetuning/finetuning_simclr_deit_t16_fake1k_v2_01_to_cifar10__v1" \
+    config.CHECKPOINT.DIR="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result/debug/other/v1/pretrain_simclr_resnet50_in1k_p100_node_4__v6" \
     config.DATA.TRAIN.DATA_SOURCES=[torchvision_dataset] \
     config.DATA.TRAIN.LABEL_SOURCES=[torchvision_dataset] \
     config.DATA.TRAIN.DATASET_NAMES=[CIFAR10] \
