@@ -1188,6 +1188,7 @@ config:
     # activation checkpointing and sometimes saving the memory from the pytorch gradient
     # buckets.
     MANUAL_GRADIENT_REDUCTION: False
+    HOST: ""
 
   # ----------------------------------------------------------------------------------- #
   # DISTRIBUTED TRAINING ON SLURM: Additional options for SLURM node allocation

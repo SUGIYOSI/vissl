@@ -16,15 +16,15 @@ config:
       FLUSH_EVERY_N_MIN: 20
   CHECKPOINT:
     AUTO_RESUME: True
+    # MARK: check
     CHECKPOINT_FREQUENCY: 1
   DATA:
-    NUM_DATALOADER_WORKERS: 5
+    NUM_DATALOADER_WORKERS: 10
     TRAIN:
       DATA_SOURCES: [disk_folder]
       DATASET_NAMES: [original_imagenet_1k]
-      # BATCHSIZE_PER_REPLICA: 64
-      # BATCHSIZE_PER_REPLICA: 128
-      BATCHSIZE_PER_REPLICA: 192
+      # MARK: check
+      BATCHSIZE_PER_REPLICA: 128
       LABEL_TYPE: sample_index    # just an implementation detail. Label isn't used
       TRANSFORMS:
         - name: ImgReplicatePil
@@ -57,7 +57,6 @@ config:
         NUM_LAYERS: 12
         NUM_HEADS: 3
         HIDDEN_DIM: 192
-        # MLP_DIM: 768
         MLP_DIM: 3072
         DROPOUT_RATE: 0.1
         ATTENTION_DROPOUT_RATE: 0
@@ -66,13 +65,11 @@ config:
       PARAMS: [
       ["mlp", {"dims": [192, 3072], "use_relu": True}],
       ["mlp", {"dims": [3072, 128]}],
-      # MARK: 768では？ 192x4=768
-      # ["mlp", {"dims": [192, 768], "use_relu": True}],
-      # ["mlp", {"dims": [768, 128]}],
       ]
     SYNC_BN_CONFIG:
       CONVERT_BN_TO_SYNC_BN: False
       SYNC_BN_TYPE: apex
+      # MARK: check
       GROUP_SIZE: 4
     AMP_PARAMS:
       USE_AMP: True
@@ -86,6 +83,7 @@ config:
   OPTIMIZER:
     name: adamw
     weight_decay: 0.05
+    # MARK: check
     num_epochs: 300
     non_regularized_parameters: [pos_embedding, class_token]
     param_schedulers:
@@ -93,8 +91,8 @@ config:
         auto_lr_scaling:
           auto_scale: True
           base_value: 0.0005
-          # base_lr_batch_size: 512
-          base_lr_batch_size: 768
+          # MARK: check
+          base_lr_batch_size: 2048
         name: composite
         schedulers:
           - name: linear
@@ -112,10 +110,10 @@ config:
     TRAIN_STEP_NAME: standard_train_step
   DISTRIBUTED:
     BACKEND: nccl
-    NUM_NODES: 1
-    NUM_PROC_PER_NODE: 4 # 1 GPU
-    # MARK: なぜかIDを指定するとコケる
-    # RUN_ID: "60215"
-    RUN_ID: auto
+    # MARK: check
+    NUM_NODES: 4
+    NUM_PROC_PER_NODE: 4
+    RUN_ID: "60215"
+    NCCL_DEBUG: True
   MACHINE:
     DEVICE: gpu
