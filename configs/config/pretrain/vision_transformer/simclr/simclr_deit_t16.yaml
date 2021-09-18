@@ -114,6 +114,6 @@ config:
     NUM_NODES: 4
     NUM_PROC_PER_NODE: 4
     RUN_ID: "60215"
-    NCCL_DEBUG: True
+    NCCL_DEBUG: False
   MACHINE:
     DEVICE: gpu
