@@ -7,9 +7,9 @@
 
 # ======== env ========
 . /etc/profile.d/modules.sh
-module load cuda/11.0.194 gcc/8.3.0 cudnn/8.1 nccl/2.8.4 openmpi/3.1.4-opa10.10
+module load cuda/10.2.89 cudnn/7.6 openmpi/3.1.4-opa10.10 gcc/8.3.0
 export PATH="/gs/hs0/tga-i/sugiyama.y.al/anaconda3/bin:${PATH}"
-source activate VISSL_py371_cu110_pyt171
+source activate VISSL_py371_cu102_pyt171
 module list
 
 # ======== configs ========

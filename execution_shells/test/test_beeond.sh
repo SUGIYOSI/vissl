@@ -1,16 +1,16 @@
 #!/bin/bash
 #$ -cwd
 #$ -l f_node=2
-#$ -l h_rt=00:02:00
+#$ -l h_rt=00:10:00
 #$ -j y
 #$ -v USE_BEEOND=1
-#$ -o /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/output__tsubame/debug/v3/o.debug_beeyond
+#$ -o /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/output__tsubame/debug/v3/o.debug_beeyond_v1
 
 # ======== env ========
 . /etc/profile.d/modules.sh
-module load cuda/11.0.194 gcc/8.3.0 cudnn/8.1 nccl/2.8.4 openmpi/3.1.4-opa10.10
+module load cuda/10.2.89 cudnn/7.6 openmpi/3.1.4-opa10.10 gcc/8.3.0
 export PATH="/gs/hs0/tga-i/sugiyama.y.al/anaconda3/bin:${PATH}"
-source activate VISSL_py371_cu110_pyt171
+source activate VISSL_py371_cu102_pyt171
 module list
 
 # ======== configs ========
@@ -24,8 +24,11 @@ export RUN_ID=$MASTER_ADDR:8888
 export NCCL_IB_DISABLE=1
 
 # ======== script ========
-# echo '--Start--'
-# echo `date`
+echo '--Start--'
+echo `date`
+
+
+
 # mpirun -npernode $NPERNODE -np $NUM_NODES \
 # python -B /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/vissl/run_distributed_engines.py \
 #     hydra.verbose=true \
@@ -39,8 +42,8 @@ export NCCL_IB_DISABLE=1
 #     config.OPTIMIZER.param_schedulers.lr.auto_lr_scaling.base_lr_batch_size=$BATCHSIZE \
 #     config.DISTRIBUTED.RUN_ID=$RUN_ID \
 
-# echo '--End--'
-# echo `date`
+echo '--End--'
+echo `date`
 
 # ======== configs ========
 # config=pretrain/vision_transformer/simclr/simclr_deit_t16.yaml \
