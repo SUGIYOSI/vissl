@@ -4,7 +4,7 @@
 #$ -l h_rt=03:00:00
 #$ -j y
 #$ -v USE_BEEOND=1
-#$ -o /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/output__tsubame/debug/v2/o.pretrain_simclr_deit_in1k_p100_node_8__v1
+#$ -o /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/output__tsubame/debug/v2/o.pretrain_moco_in1k_p100_node_8__v1
 
 # ======== env ========
 . /etc/profile.d/modules.sh
@@ -17,7 +17,7 @@ module list
 export NPERNODE=1
 export NUM_NODES=8
 export NUM_PROC=4
-export BATCHSIZE_FOR_GPU=64
+export BATCHSIZE_FOR_GPU=8
 export BATCHSIZE=$(($BATCHSIZE_FOR_GPU*$NUM_NODES*$NUM_PROC))
 export MASTER_ADDR=$(ip addr show dev ib0 | grep '\<inet\>' | cut -d " " -f 6 | cut -d "/" -f 1)
 export RUN_ID=$MASTER_ADDR:8888
@@ -37,8 +37,8 @@ echo `date`
 mpirun -npernode $NPERNODE -np $NUM_NODES \
 python -B /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/vissl/run_distributed_engines.py \
     hydra.verbose=true \
-    config=/pretrain/vision_transformer/simclr/simclr_deit_t16.yaml \
-    config.CHECKPOINT.DIR="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result__tsubame/debug/v2/pretrain_simclr_deit_in1k_p100_node_8__v1" \
+    config=pretrain/moco/moco_resnet50.yaml \
+    config.CHECKPOINT.DIR="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result__tsubame/debug/v2/pretrain_moco_in1k_p100_node_8__v1" \
     config.DATA.TRAIN.DATASET_NAMES=[beeond_original_imagenet_1k] \
     config.DISTRIBUTED.NUM_NODES=$NUM_NODES \
     config.DISTRIBUTED.NUM_PROC_PER_NODE=$NUM_PROC \

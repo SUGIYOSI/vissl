@@ -171,6 +171,10 @@
         "train": ["/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/originalimages/train", "/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/originalimages/train"],
         "val": ["/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/originalimages/validation", "/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/originalimages/validation"]
     },
+    "beeond_original_imagenet_1k": {
+        "train": ["/beeond/originalimages/train", "/beeond/originalimages/train"],
+        "val": ["/beeond/originalimages/validation", "/beeond/originalimages/validation"]
+    },
     "fakeimagenet_v1_1k": {
         "train": ["/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/fakeimages_v1/train", "/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/fakeimages_v1/train"],
         "val": ["/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/fakeimages_v1/validation", "/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/fakeimages_v1/validation"]
