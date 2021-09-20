@@ -57,9 +57,9 @@ config:
         IMAGE_SIZE: 224
         PATCH_SIZE: 16
         NUM_LAYERS: 12
-        NUM_HEADS: 6
-        HIDDEN_DIM: 384
-        MLP_DIM: 1532
+        NUM_HEADS: 3
+        HIDDEN_DIM: 192
+        MLP_DIM: 3072
         CLASSIFIER: token
         DROPOUT_RATE: 0
         ATTENTION_DROPOUT_RATE: 0
@@ -67,7 +67,7 @@ config:
         DROP_PATH_RATE: 0.1 # stochastic depth dropout probability
     HEAD:
       PARAMS: [
-              ["swav_head", {"use_weight_norm_prototypes": True, "dims": [384, 2048, 2048, 256], "use_bn": False, "return_embeddings": False, "activation_name": "GELU", "num_clusters": [65536]}],
+              ["swav_head", {"use_weight_norm_prototypes": True, "dims": [192, 2048, 2048, 256], "use_bn": False, "return_embeddings": False, "activation_name": "GELU", "num_clusters": [65536]}],
       ]
     TEMP_FROZEN_PARAMS_ITER_MAP: [
       ['module.heads.0.prototypes0.weight_v', 1251],
@@ -135,7 +135,7 @@ config:
           update_interval: epoch
   DISTRIBUTED:
     BACKEND: nccl
-    NUM_NODES: 4
+    NUM_NODES: 8
     NUM_PROC_PER_NODE: 4
     INIT_METHOD: tcp
     RUN_ID: "60215"
@@ -144,5 +144,5 @@ config:
   CHECKPOINT:
     DIR: "."
     AUTO_RESUME: True
-    CHECKPOINT_FREQUENCY: 5
+    CHECKPOINT_FREQUENCY: 20
     OVERWRITE_EXISTING: true

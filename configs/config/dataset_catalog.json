@@ -31,9 +31,17 @@
         "train": ["/gs/hs0/tga-i/sugiyama.y.al/datasets/CIFAR_10/train", "/gs/hs0/tga-i/sugiyama.y.al/datasets/CIFAR_10/train"],
         "val": ["/gs/hs0/tga-i/sugiyama.y.al/datasets/CIFAR_10/validation", "/gs/hs0/tga-i/sugiyama.y.al/datasets/CIFAR_10/validation"]
     },
+    "beeond_CIFAR10": {
+        "train": ["/beeond/CIFAR_10/train", "/beeond/CIFAR_10/train"],
+        "val": ["/beeond/CIFAR_10/validation", "/beeond/CIFAR_10/validation"]
+    },
     "CIFAR100": {
         "train": ["/gs/hs0/tga-i/sugiyama.y.al/datasets/CIFAR_100/train", "/gs/hs0/tga-i/sugiyama.y.al/datasets/CIFAR_100/train"],
         "val": ["/gs/hs0/tga-i/sugiyama.y.al/datasets/CIFAR_100/validation", "/gs/hs0/tga-i/sugiyama.y.al/datasets/CIFAR_100/validation"]
+    },
+    "beeond_CIFAR100": {
+        "train": ["/beeond/CIFAR_100/train", "/beeond/CIFAR_100/train"],
+        "val": ["/beeond/CIFAR_100/validation", "/beeond/CIFAR_100/validation"]
     },
     "STL10": {
         "train": ["<path_to_pytorch_dataset>", "<unused>"],
@@ -147,14 +155,6 @@
         "train": ["<root_folder>", "<root_folder>"],
         "val": ["<root_folder>", "<root_folder>"]
     },
-    "imagenet1k-per01": {
-        "train": ["<img_path>", "<lbl_path>"],
-        "val": ["<img_path>", "<lbl_path>"]
-    },
-    "imagenet1k-per10": {
-        "train": ["<img_path>", "<lbl_path>"],
-        "val": ["<img_path>", "<lbl_path>"]
-    },
     "google-imagenet1k-per01": {
         "train": ["<img_path>", "<lbl_path>"],
         "val": ["<img_path>", "<lbl_path>"]
@@ -210,5 +210,21 @@
     "fakeimagenet_v1_1k_10": {
         "train": ["/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/fakeimages_v1_10/train", "/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/fakeimages_v1_10/train"],
         "val": ["/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/fakeimages_v1/validation", "/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/fakeimages_v1/validation"]
+    },
+    "imagenet1k-per01": {
+        "train": ["/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/originalimages_per1/train", "/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/originalimages_per1/train"],
+        "val": ["/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/originalimages_per1/validation", "/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/originalimages_per1/validation"]
+    },
+    "beeond_imagenet1k-per01": {
+        "train": ["/beeond/originalimages_per1/train", "/beeond/originalimages_per1/train"],
+        "val": ["/beeond/originalimages_per1/validation", "/beeond/originalimages_per1/validation"]
+    },
+    "imagenet1k-per10": {
+        "train": ["/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/originalimages_per10/train", "/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/originalimages_per10/train"],
+        "val": ["/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/originalimages_per10/validation", "/gs/hs0/tga-i/sugiyama.y.al/datasets/ILSVRC2012/originalimages_per10/validation"]
+    },
+    "beeond_imagenet1k-per10": {
+        "train": ["/beeond/originalimages_per10/train", "/beeond/originalimages_per10/train"],
+        "val": ["/beeond/originalimages_per10/validation", "/beeond/originalimages_per10/validation"]
     }
 }
