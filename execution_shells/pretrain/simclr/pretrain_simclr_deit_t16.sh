@@ -1,7 +1,7 @@
 #!/bin/bash
 #$ -cwd
 #$ -l f_node=8
-#$ -l h_rt=24:00:00
+#$ -l h_rt=08:00:00
 #$ -j y
 #$ -v USE_BEEOND=1
 #$ -o /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/output__tsubame/pretrain/simclr/pretrain_simclr_deit_t16_in1k_per10__v1
