@@ -1,7 +1,7 @@
 # @package _global_
 config:
   VERBOSE: True
-  LOG_FREQUENCY: 100
+  LOG_FREQUENCY: 10
   TEST_ONLY: False
   TEST_EVERY_NUM_EPOCH: 1
   TEST_MODEL: True
@@ -10,15 +10,17 @@ config:
   HOOKS:
     PERF_STATS:
       MONITOR_PERF_STATS: True
+      ROLLING_BTIME_FREQ: 313
+      PERF_STAT_FREQUENCY: 10
     TENSORBOARD_SETUP:
       USE_TENSORBOARD: True
       FLUSH_EVERY_N_MIN: 20
   DATA:
-    NUM_DATALOADER_WORKERS: 2
+    NUM_DATALOADER_WORKERS: 5
     TRAIN:
-      DATA_SOURCES: [torchvision_dataset]
-      LABEL_SOURCES: [torchvision_dataset]
-      DATASET_NAMES: [CIFAR10]
+      DATA_SOURCES: [disk_folder]
+      LABEL_SOURCES: [disk_folder]
+      DATASET_NAMES: [original_imagenet_1k]
       # MARK: check
       BATCHSIZE_PER_REPLICA: 64
       TRANSFORMS:
@@ -29,13 +31,10 @@ config:
         - name: Normalize
           mean: [0.485, 0.456, 0.406]
           std: [0.229, 0.224, 0.225]
-      MMAP_MODE: True
-      COPY_TO_LOCAL_DISK: False
-      COPY_DESTINATION_DIR: /tmp/cifar10/
     TEST:
-      DATA_SOURCES: [torchvision_dataset]
-      LABEL_SOURCES: [torchvision_dataset]
-      DATASET_NAMES: [CIFAR10]
+      DATA_SOURCES: [disk_folder]
+      LABEL_SOURCES: [disk_folder]
+      DATASET_NAMES: [original_imagenet_1k]
       # MARK: check
       BATCHSIZE_PER_REPLICA: 64
       TRANSFORMS:
@@ -47,9 +46,6 @@ config:
         - name: Normalize
           mean: [0.485, 0.456, 0.406]
           std: [0.229, 0.224, 0.225]
-      MMAP_MODE: True
-      COPY_TO_LOCAL_DISK: False
-      COPY_DESTINATION_DIR: /tmp/cifar10/
   METERS:
     name: accuracy_list_meter
     accuracy_list_meter:
@@ -60,22 +56,29 @@ config:
   MODEL:
     FEATURE_EVAL_SETTINGS:
       EVAL_MODE_ON: True
-    TRUNK:
-      NAME: resnet
-      RESNETS:
-        DEPTH: 50
-    HEAD:
-      PARAMS: [
-        ["mlp", {"dims": [2048, 10]}],
-      ]
+      FREEZE_TRUNK_ONLY: True
     WEIGHTS_INIT:
       PARAMS_FILE: "specify model weights"
       STATE_DICT_KEY_NAME: "classy_state_dict"
-      APPEND_PREFIX: "trunk."
+    TRUNK:
+      NAME: vision_transformer
+      VISION_TRANSFORMERS:
+        IMAGE_SIZE: 224
+        PATCH_SIZE: 16
+        NUM_LAYERS: 12
+        NUM_HEADS: 3
+        HIDDEN_DIM: 192
+        MLP_DIM: 3072
+        DROPOUT_RATE: 0.1
+        ATTENTION_DROPOUT_RATE: 0
+        CLASSIFIER: token
+    HEAD:
+      PARAMS: [
+        ["mlp", {"dims": [192, 1000]}],
+      ]
     SYNC_BN_CONFIG:
       CONVERT_BN_TO_SYNC_BN: False
       SYNC_BN_TYPE: apex
-      # MARK: check
       GROUP_SIZE: 4
     AMP_PARAMS:
       USE_AMP: True
@@ -85,27 +88,33 @@ config:
     cross_entropy_multiple_output_single_target:
       ignore_index: -1
   OPTIMIZER:
-      name: sgd
-      weight_decay: 0.000
-      momentum: 0.9
-      num_epochs: 1000
-      nesterov: True
-      regularize_bn: False
-      regularize_bias: True
-      param_schedulers:
-        lr:
-          auto_lr_scaling:
-            auto_scale: true
-            base_value: 0.1
-            # MARK: check
-            base_lr_batch_size: 256
-          values: [0.1, 0.01, 0.001, 0.0001, 0.00001]
-          milestones: [30, 60, 90, 100]
-          name: multistep
-          update_interval: epoch
+    name: sgd
+    # In the OSS Caffe2 benchmark, RN50 models use 1e-4 and AlexNet models 5e-4
+    weight_decay: 0
+    momentum: 0.9
+    num_epochs: 50
+    nesterov: False
+    regularize_bn: True
+    regularize_bias: True
+    param_schedulers:
+      lr:
+        auto_lr_scaling:
+          auto_scale: true
+          base_value: 0.1
+          base_lr_batch_size: 256
+        name: composite
+        schedulers:
+          - name: linear
+            start_value: 0.0
+            end_value: 0.1
+          - name: cosine
+            start_value: 0.1
+            end_value: 0
+        interval_scaling: [rescaled, rescaled]
+        update_interval: step
+        lengths: [0.1, 0.9]
   DISTRIBUTED:
     BACKEND: nccl
-    # MARK: check
     NUM_NODES: 1
     NUM_PROC_PER_NODE: 4
     INIT_METHOD: tcp
@@ -115,4 +124,4 @@ config:
   CHECKPOINT:
     DIR: "."
     AUTO_RESUME: True
-    CHECKPOINT_FREQUENCY: 100
+    CHECKPOINT_FREQUENCY: 10

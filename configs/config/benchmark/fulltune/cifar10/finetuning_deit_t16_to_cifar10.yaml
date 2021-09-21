@@ -1,6 +1,6 @@
 # @package _global_
 config:
-  VERBOSE: True
+  VERBOSE: False
   LOG_FREQUENCY: 100
   TEST_ONLY: False
   TEST_EVERY_NUM_EPOCH: 1
@@ -10,15 +10,19 @@ config:
   HOOKS:
     PERF_STATS:
       MONITOR_PERF_STATS: True
+      ROLLING_BTIME_FREQ: 313
+      PERF_STAT_FREQUENCY: 10
     TENSORBOARD_SETUP:
       USE_TENSORBOARD: True
       FLUSH_EVERY_N_MIN: 20
   DATA:
     NUM_DATALOADER_WORKERS: 5
     TRAIN:
-      DATA_SOURCES: [disk_folder]
-      LABEL_SOURCES: [disk_folder]
-      BATCHSIZE_PER_REPLICA: 128
+      DATA_SOURCES: [torchvision_dataset]
+      LABEL_SOURCES: [torchvision_dataset]
+      DATASET_NAMES: [CIFAR10]
+      # MARK: check
+      BATCHSIZE_PER_REPLICA: 64
       TRANSFORMS:
         - name: RandomResizedCrop
           size: 224
@@ -27,11 +31,13 @@ config:
         - name: Normalize
           mean: [0.485, 0.456, 0.406]
           std: [0.229, 0.224, 0.225]
-      COPY_DESTINATION_DIR: /tmp/imagenet1k/
+      COPY_DESTINATION_DIR: /tmp/cifar10/
     TEST:
-      DATA_SOURCES: [disk_folder]
-      LABEL_SOURCES: [disk_folder]
-      BATCHSIZE_PER_REPLICA: 128
+      DATA_SOURCES: [torchvision_dataset]
+      LABEL_SOURCES: [torchvision_dataset]
+      DATASET_NAMES: [CIFAR10]
+      # MARK: check
+      BATCHSIZE_PER_REPLICA: 64
       TRANSFORMS:
         - name: Resize
           size: 256
@@ -41,9 +47,7 @@ config:
         - name: Normalize
           mean: [0.485, 0.456, 0.406]
           std: [0.229, 0.224, 0.225]
-      MMAP_MODE: True
-      COPY_TO_LOCAL_DISK: False
-      COPY_DESTINATION_DIR: /tmp/imagenet1k/
+      COPY_DESTINATION_DIR: /tmp/cifar10/
   METERS:
     name: accuracy_list_meter
     accuracy_list_meter:
@@ -54,24 +58,30 @@ config:
   MODEL:
     FEATURE_EVAL_SETTINGS:
       EVAL_MODE_ON: True
-      FREEZE_TRUNK_ONLY: True
-    TRUNK:
-      NAME: resnet
-      RESNETS:
-        DEPTH: 50
-    HEAD:
-      # MARK: eval_mlpを使用すると精度が上がる理由はチャネル数
-      # PARAMS: [
-      #   ["eval_mlp", {"in_channels": 2048, "dims": [8192, 1000]}],
-      # ]
-      # PARAMS: [
-      #   ["mlp", {"dims": [8192, 1000]}],
-      # ]
-      PARAMS: [
-        ["mlp", {"dims": [2048, 1000]}],
-      ]
     WEIGHTS_INIT:
       PARAMS_FILE: "specify model weights"
+      STATE_DICT_KEY_NAME: "classy_state_dict"
+      SKIP_LAYERS: [
+        'heads.0.clf.0.weight',
+        'heads.0.clf.0.bias',
+        'num_batches_tracked'
+      ]
+    TRUNK:
+      NAME: vision_transformer
+      VISION_TRANSFORMERS:
+        IMAGE_SIZE: 224
+        PATCH_SIZE: 16
+        NUM_LAYERS: 12
+        NUM_HEADS: 3
+        HIDDEN_DIM: 192
+        MLP_DIM: 3072
+        DROPOUT_RATE: 0.1
+        ATTENTION_DROPOUT_RATE: 0
+        CLASSIFIER: token
+    HEAD:
+      PARAMS: [
+        ["mlp", {"dims": [192, 10]}],
+      ]
     SYNC_BN_CONFIG:
       CONVERT_BN_TO_SYNC_BN: False
       SYNC_BN_TYPE: apex
@@ -85,10 +95,9 @@ config:
       ignore_index: -1
   OPTIMIZER:
     name: sgd
-    # 検証必要
-    weight_decay: 0.0005
+    weight_decay: 0.000
     momentum: 0.9
-    num_epochs: 100
+    num_epochs: 500
     nesterov: True
     regularize_bn: False
     regularize_bias: True
@@ -96,12 +105,19 @@ config:
       lr:
         auto_lr_scaling:
           auto_scale: true
-          base_value: 0.1
-          base_lr_batch_size: 512
-        values: [0.1, 0.01, 0.001]
-        milestones: [30, 60]
-        name: multistep
-        update_interval: epoch
+          base_value: 0.01
+          base_lr_batch_size: 256
+        name: composite
+        schedulers:
+          - name: linear
+            start_value: 0.0
+            end_value: 0.1
+          - name: cosine
+            start_value: 0.1
+            end_value: 0
+        interval_scaling: [rescaled, rescaled]
+        update_interval: step
+        lengths: [0.1, 0.9]
   DISTRIBUTED:
     BACKEND: nccl
     NUM_NODES: 1

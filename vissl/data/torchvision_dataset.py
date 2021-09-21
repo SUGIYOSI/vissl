@@ -18,7 +18,9 @@ class TorchvisionDatasetName:
     """
 
     CIFAR10 = "CIFAR10"
+    beeond_CIFAR10 = "beeond_CIFAR10"
     CIFAR100 = "CIFAR100"
+    beeond_CIFAR100 = "beeond_CIFAR100"
     STL10 = "STL10"
     MNIST = "MNIST"
     SVHN = "SVHN"
@@ -62,6 +64,11 @@ class TorchvisionDataset(Dataset):
         elif self.dataset_name == TorchvisionDatasetName.SVHN:
             stl_split = "train" if is_train_split else "test"
             return SVHN(root=self.path, split=stl_split)
+        # MARK: ADD Beeond
+        elif self.dataset_name == TorchvisionDatasetName.beeond_CIFAR10:
+            return CIFAR10(self.path, train=is_train_split)
+        elif self.dataset_name == TorchvisionDatasetName.beeond_CIFAR100:
+            return CIFAR100(self.path, train=is_train_split)
         else:
             raise ValueError(f"Unsupported dataset {self.dataset_name: str}")
 

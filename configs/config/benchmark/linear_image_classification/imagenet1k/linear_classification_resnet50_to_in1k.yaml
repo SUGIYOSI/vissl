@@ -1,7 +1,7 @@
 # @package _global_
 config:
   VERBOSE: True
-  LOG_FREQUENCY: 100
+  LOG_FREQUENCY: 200
   TEST_ONLY: False
   TEST_EVERY_NUM_EPOCH: 1
   TEST_MODEL: True
@@ -14,7 +14,7 @@ config:
       USE_TENSORBOARD: True
       FLUSH_EVERY_N_MIN: 20
   DATA:
-    NUM_DATALOADER_WORKERS: 2
+    NUM_DATALOADER_WORKERS: 5
     TRAIN:
       DATA_SOURCES: [disk_folder]
       LABEL_SOURCES: [disk_folder]
@@ -29,6 +29,8 @@ config:
         - name: Normalize
           mean: [0.485, 0.456, 0.406]
           std: [0.229, 0.224, 0.225]
+      MMAP_MODE: True
+      COPY_TO_LOCAL_DISK: False
       COPY_DESTINATION_DIR: /tmp/imagenet1k/
     TEST:
       DATA_SOURCES: [disk_folder]
@@ -72,7 +74,8 @@ config:
         ["eval_mlp", {"in_channels": 2048, "dims": [8192, 1000]}],
       ]
     WEIGHTS_INIT:
-      PARAMS_FILE: "specify model weights"
+      PARAMS_FILE: "specify the model weights"
+      STATE_DICT_KEY_NAME: classy_state_dict
     SYNC_BN_CONFIG:
       CONVERT_BN_TO_SYNC_BN: True
       SYNC_BN_TYPE: apex
@@ -86,23 +89,24 @@ config:
     cross_entropy_multiple_output_single_target:
       ignore_index: -1
   OPTIMIZER:
-    name: sgd
-    weight_decay: 0.0005
-    momentum: 0.9
-    num_epochs: 28
-    nesterov: True
-    regularize_bn: False
-    regularize_bias: True
-    param_schedulers:
-      lr:
-        auto_lr_scaling:
-          auto_scale: true
-          base_value: 0.01
-          base_lr_batch_size: 256
-        values: [0.01, 0.001, 0.0001, 0.00001]
-        milestones: [8, 16, 24]
-        name: multistep
-        update_interval: epoch
+      name: sgd
+      # In the OSS Caffe2 benchmark, RN50 models use 1e-4 and AlexNet models 5e-4
+      weight_decay: 0.0005
+      momentum: 0.9
+      num_epochs: 50
+      nesterov: True
+      regularize_bn: False
+      regularize_bias: True
+      param_schedulers:
+        lr:
+          auto_lr_scaling:
+            auto_scale: true
+            base_value: 0.01
+            base_lr_batch_size: 256
+          values: [0.01, 0.001, 0.0001, 0.00001]
+          milestones: [8, 16, 24]
+          name: multistep
+          update_interval: epoch
   DISTRIBUTED:
     BACKEND: nccl
     # MARK: check
@@ -115,4 +119,4 @@ config:
   CHECKPOINT:
     DIR: "."
     AUTO_RESUME: True
-    CHECKPOINT_FREQUENCY: 1
+    CHECKPOINT_FREQUENCY: 10
