@@ -111,10 +111,10 @@ config:
         schedulers:
           - name: linear
             start_value: 0.0
-            end_value: 0.1
+            end_value: 0.01
           - name: cosine
-            start_value: 0.1
-            end_value: 0
+            start_value: 0.01
+            end_value: 0.0
         interval_scaling: [rescaled, rescaled]
         update_interval: step
         lengths: [0.1, 0.9]
