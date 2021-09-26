@@ -1,7 +1,7 @@
 #!/bin/bash
 #$ -cwd
 #$ -l f_node=1
-#$ -l h_rt=24:00:00
+#$ -l h_rt=13:00:00
 #$ -j y
 #$ -o /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/output__tsubame/finetuning/deit_t16/o.finetuning_simclr_deit_t16_in1k_per10_to_cifar10__v1
 
