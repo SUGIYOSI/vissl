@@ -20,7 +20,7 @@ config:
       LABEL_SOURCES: [disk_folder]
       DATASET_NAMES: [original_imagenet_1k]
       # MARK: check
-      BATCHSIZE_PER_REPLICA: 64
+      BATCHSIZE_PER_REPLICA: 128
       TRANSFORMS:
         - name: RandomResizedCrop
           size: 224
@@ -37,7 +37,7 @@ config:
       LABEL_SOURCES: [disk_folder]
       DATASET_NAMES: [original_imagenet_1k]
       # MARK: check
-      BATCHSIZE_PER_REPLICA: 64
+      BATCHSIZE_PER_REPLICA: 128
       TRANSFORMS:
         - name: Resize
           size: 256
@@ -93,7 +93,7 @@ config:
       # In the OSS Caffe2 benchmark, RN50 models use 1e-4 and AlexNet models 5e-4
       weight_decay: 0.0005
       momentum: 0.9
-      num_epochs: 50
+      num_epochs: 40
       nesterov: True
       regularize_bn: False
       regularize_bias: True
@@ -102,7 +102,7 @@ config:
           auto_lr_scaling:
             auto_scale: true
             base_value: 0.01
-            base_lr_batch_size: 256
+            base_lr_batch_size: 512
           values: [0.01, 0.001, 0.0001, 0.00001]
           milestones: [8, 16, 24]
           name: multistep
