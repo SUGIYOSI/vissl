@@ -3,7 +3,7 @@
 #$ -l f_node=1
 #$ -l h_rt=16:00:00
 #$ -j y
-#$ -o /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/output__tsubame/finetuning/resnet50/o.finetuning_simclr_resnet50_in1k_per10_to_cifar100__v1
+#$ -o /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/output__tsubame/finetuning/resnet50/o.finetuning_simclr_resnet50_in1k_ofiicial_ep800_to_cifar100__v2
 
 # ======== env ========
 . /etc/profile.d/modules.sh
@@ -17,8 +17,8 @@ echo '--Start--'
 echo `date`
 python /gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/vissl/run_distributed_engines.py \
     config=/benchmark/fulltune/cifar100/finetuning_resnet50_to_cifar100.yaml \
-    config.CHECKPOINT.DIR="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result__tsubame/finetuning/resnet50/finetuning_simclr_resnet50_in1k_per10_to_cifar100__v1" \
-    config.MODEL.WEIGHTS_INIT.PARAMS_FILE="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result__tsubame/pretrain/simclr/pretrain_simclr_resnet50_in1k_per10__v1/model_final_checkpoint_phase199.torch" \
+    config.CHECKPOINT.DIR="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result__tsubame/finetuning/resnet50/finetuning_simclr_resnet50_in1k_ofiicial_ep800_to_cifar100__v2" \
+    config.MODEL.WEIGHTS_INIT.PARAMS_FILE="/gs/hs0/tga-i/sugiyama.y.al/VISSL/vissl/train_result__tsubame/pretrain/distribution/simclr/model_final_checkpoint_phase799.torch" \
 
 echo '--End--'
 echo `date`
