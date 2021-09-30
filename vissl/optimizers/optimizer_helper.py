@@ -290,8 +290,11 @@ def get_optimizer_param_groups(
     head_regularized_params = _filter_trainable(head_regularized_params)
     head_unregularized_params = _filter_trainable(head_unregularized_params)
     regularized_params = _filter_trainable(regularized_params)
+    # MARK: for debug
+    all_params = sum(p.numel() for p in model.parameters())
     logging.info(
         f"\nTrainable params: {len(trainable_params)}, \n"
+        f"all_params: {all_params}, \n"
         f"Non-Trainable params: {len(non_trainable_params)}, \n"
         f"Trunk Regularized Parameters: {len(trunk_regularized_params)}, \n"
         f"Trunk Unregularized Parameters {len(trunk_unregularized_params)}, \n"
