@@ -14,10 +14,10 @@ config:
     TENSORBOARD_SETUP:
       USE_TENSORBOARD: True
       FLUSH_EVERY_N_MIN: 20
-    CHECKPOINT:
-      AUTO_RESUME: True
-      # MARK: check
-      CHECKPOINT_FREQUENCY: 20
+  CHECKPOINT:
+    AUTO_RESUME: True
+    # MARK: check
+    CHECKPOINT_FREQUENCY: 20
   DATA:
     NUM_DATALOADER_WORKERS: 10
     TRAIN:
@@ -84,7 +84,7 @@ config:
       momentum: 0.9
       nesterov: False
       # MARK: check
-      num_epochs: 200
+      num_epochs: 400
       regularize_bn: True
       regularize_bias: True
       param_schedulers:
@@ -106,8 +106,8 @@ config:
           interval_scaling: [rescaled, fixed]
           # MARK: check
           # lengths: [0.1, 0.9]                 # 100ep
-          lengths: [0.05, 0.95]             # 200ep
-          # lengths: [0.025, 0.975]           # 400ep
+          # lengths: [0.05, 0.95]             # 200ep
+          lengths: [0.025, 0.975]           # 400ep
           # lengths: [0.02, 0.98]             # 500ep
           # lengths: [0.0166667, 0.9833333]   # 600ep
           # lengths: [0.0125, 0.9875]         # 800ep
@@ -122,7 +122,7 @@ config:
   DISTRIBUTED:
     # MARK: check
     BACKEND: nccl
-    NUM_NODES: 4
+    NUM_NODES: 32
     NUM_PROC_PER_NODE: 4
     # RUN_ID: auto
     RUN_ID: "60215"
