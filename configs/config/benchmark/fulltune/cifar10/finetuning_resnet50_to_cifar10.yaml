@@ -22,7 +22,7 @@ config:
       # MARK: check
       BATCHSIZE_PER_REPLICA: 64
       TRANSFORMS:
-        - name: RandomResizedCrop
+        - name: Resize
           size: 224
         - name: RandomHorizontalFlip
         - name: ToTensor
@@ -40,8 +40,6 @@ config:
       BATCHSIZE_PER_REPLICA: 64
       TRANSFORMS:
         - name: Resize
-          size: 256
-        - name: CenterCrop
           size: 224
         - name: ToTensor
         - name: Normalize
